@@ -1,0 +1,165 @@
+---
+title: ReversedNumberedEntry
+description: Reverse-numbered list entries where newer items get higher numbers, ideal for publications and research papers
+---
+
+The `ReversedNumberedEntry` is designed for items that should be numbered in reverse order, where the most recent items at the top of the list receive the highest numbers. This is common in academic CVs where recent publications should have higher numbers.
+
+## When to use ReversedNumberedEntry
+
+Use `ReversedNumberedEntry` when you:
+
+- List publications in reverse chronological order (newest first) but want them numbered with higher numbers for recent items
+- Want recent achievements to have higher numbers
+- Need reverse numbering (5, 4, 3, 2, 1) instead of forward numbering (1, 2, 3, 4, 5)
+- Follow academic conventions where recent work gets higher publication numbers
+
+<Tip>
+If you want forward numbering (1, 2, 3...), use [NumberedEntry](/entries/numbered) instead.
+</Tip>
+
+## Fields
+
+<ParamField path="reversed_number" type="string" required>
+  The content or description of the reverse-numbered item
+
+  ```yaml
+  - reversed_number: Latest research paper on quantum computing
+  ```
+
+  This is the only required field for a `ReversedNumberedEntry`. Items will be numbered in reverse order, with the first item getting the highest number.
+</ParamField>
+
+## How reverse numbering works
+
+If you have 5 entries, they will be numbered:
+- First entry: 5
+- Second entry: 4
+- Third entry: 3
+- Fourth entry: 2
+- Fifth entry: 1
+
+This means recent items (at the top of your YAML file) get higher numbers, which is conventional in academic publishing.
+
+## Examples
+
+### Research publications
+
+```yaml
+cv:
+  sections:
+    publications:
+      - reversed_number: J. Doe, "Quantum Machine Learning", Nature, 2024
+      - reversed_number: J. Doe, M. Smith, "Neural Network Optimization", Science, 2023
+      - reversed_number: J. Doe, "Deep Learning Fundamentals", JMLR, 2022
+      - reversed_number: J. Doe, "Introduction to AI", AI Journal, 2021
+```
+
+This creates a reverse-numbered list:
+
+4. J. Doe, "Quantum Machine Learning", Nature, 2024
+3. J. Doe, M. Smith, "Neural Network Optimization", Science, 2023
+2. J. Doe, "Deep Learning Fundamentals", JMLR, 2022
+1. J. Doe, "Introduction to AI", AI Journal, 2021
+
+### Patent applications
+
+```yaml
+cv:
+  sections:
+    patent_applications:
+      - reversed_number: Recent patent application for AI optimization - Filed 2024
+      - reversed_number: Patent for automated testing framework - Filed 2023
+      - reversed_number: System architecture patent - Filed 2022
+```
+
+Results in:
+
+3. Recent patent application for AI optimization - Filed 2024
+2. Patent for automated testing framework - Filed 2023
+1. System architecture patent - Filed 2022
+
+### Awards and honors
+
+```yaml
+cv:
+  sections:
+    honors:
+      - reversed_number: Outstanding Researcher Award, University of XYZ, 2024
+      - reversed_number: Best Paper Award, International Conference on ML, 2023
+      - reversed_number: Graduate Fellowship, National Science Foundation, 2022
+```
+
+## Comparison with other entry types
+
+<Tabs>
+  <Tab title="ReversedNumberedEntry vs NumberedEntry">
+    **ReversedNumberedEntry**: Items numbered in reverse (5, 4, 3, 2, 1)
+    
+    **NumberedEntry**: Items numbered forward (1, 2, 3, 4, 5)
+    
+    Use `ReversedNumberedEntry` when listing items in reverse chronological order (newest first) and you want recent items to have higher numbers. Use `NumberedEntry` for standard forward numbering.
+  </Tab>
+  <Tab title="ReversedNumberedEntry vs PublicationEntry">
+    **ReversedNumberedEntry**: Simple reverse-numbered text entries
+    
+    **PublicationEntry**: Structured publication data with title, authors, journal, DOI, etc.
+    
+    Use `ReversedNumberedEntry` for simple reverse-numbered lists. Use `PublicationEntry` when you need structured bibliographic data with proper citation formatting.
+  </Tab>
+</Tabs>
+
+## Tips
+
+<AccordionGroup>
+  <Accordion title="Academic convention">
+    In academic CVs, it's common to list publications with the most recent first and numbered with higher numbers. This shows your productivity growth over time - a higher publication number indicates more recent work.
+  </Accordion>
+  
+  <Accordion title="Ordering in YAML">
+    Put your most recent items **first** in the YAML file. They will automatically get the highest numbers:
+    
+    ```yaml
+    publications:
+      - reversed_number: "Newest paper (2024)"  # Gets number 3
+      - reversed_number: "Middle paper (2023)"   # Gets number 2
+      - reversed_number: "Oldest paper (2022)"   # Gets number 1
+    ```
+  </Accordion>
+  
+  <Accordion title="Markdown support">
+    You can use Markdown formatting in the `reversed_number` field:
+    
+    ```yaml
+    - reversed_number: "**Bold title**, *Journal Name*, 2024"
+    - reversed_number: "Paper with [DOI link](https://doi.org/...)"
+    ```
+  </Accordion>
+  
+  <Accordion title="When to use PublicationEntry instead">
+    For formal publications, consider using `PublicationEntry` which provides:
+    - Structured fields (title, authors, journal, date, DOI)
+    - Automatic citation formatting
+    - DOI hyperlinks
+    - Author name highlighting
+    
+    See [PublicationEntry](/entries/publication) for details.
+  </Accordion>
+</AccordionGroup>
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="NumberedEntry" icon="arrow-down-1-9" href="/entries/numbered">
+    Forward-numbered entries (1, 2, 3...)
+  </Card>
+  <Card title="PublicationEntry" icon="book" href="/entries/publication">
+    Structured publication entries with citation formatting
+  </Card>
+  <Card title="BulletEntry" icon="list" href="/entries/bullet">
+    Simple bullet point lists without numbering
+  </Card>
+  <Card title="Entry Types Overview" icon="grid" href="/entries/overview">
+    Compare all entry types
+  </Card>
+</CardGroup>

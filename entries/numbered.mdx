@@ -1,0 +1,144 @@
+---
+title: NumberedEntry
+description: Numbered list entries for publications, patents, and other sequentially numbered items
+---
+
+The `NumberedEntry` is designed for items that should be displayed with explicit numbering, such as publications, patents, or achievements that you want to number sequentially.
+
+## When to use NumberedEntry
+
+Use `NumberedEntry` when you:
+
+- Have publications that should be numbered
+- Want to list patents with specific numbers
+- Need explicit sequential numbering for items
+- Want to maintain a consistent numbering scheme across entries
+
+<Tip>
+If you want reverse numbering (where newer items have higher numbers), use [ReversedNumberedEntry](/entries/reversed-numbered) instead.
+</Tip>
+
+## Fields
+
+<ParamField path="number" type="string" required>
+  The content or description of the numbered item
+
+  ```yaml
+  - number: First publication about machine learning optimization
+  ```
+
+  This is the only required field for a `NumberedEntry`. The entry will be displayed with automatic numbering.
+</ParamField>
+
+## Examples
+
+### Publications
+
+```yaml
+cv:
+  sections:
+    publications:
+      - number: J. Doe, "Advanced Techniques in Neural Networks", Journal of AI Research, 2023
+      - number: J. Doe, M. Smith, "Deep Learning for Computer Vision", International Conference on ML, 2022
+      - number: J. Doe, "Introduction to Reinforcement Learning", AI Magazine, 2021
+```
+
+This creates a numbered list:
+
+1. J. Doe, "Advanced Techniques in Neural Networks", Journal of AI Research, 2023
+2. J. Doe, M. Smith, "Deep Learning for Computer Vision", International Conference on ML, 2022
+3. J. Doe, "Introduction to Reinforcement Learning", AI Magazine, 2021
+
+### Patents
+
+```yaml
+cv:
+  sections:
+    patents:
+      - number: Patent for ABC technology - US Patent 10,123,456
+      - number: Method for optimizing XYZ process - US Patent 9,876,543
+      - number: System for automated data processing - US Patent 9,555,123
+```
+
+### Achievements
+
+```yaml
+cv:
+  sections:
+    achievements:
+      - number: First place in National Mathematics Olympiad
+      - number: Winner of Best Paper Award at ICML 2023
+      - number: Recipient of Outstanding Graduate Student Award
+```
+
+## Comparison with other entry types
+
+<Tabs>
+  <Tab title="NumberedEntry vs ReversedNumberedEntry">
+    **NumberedEntry**: Items are numbered 1, 2, 3... from top to bottom
+    
+    **ReversedNumberedEntry**: Items are numbered in reverse, so newer items at the top get higher numbers
+    
+    Use `NumberedEntry` when the chronological order matches the numbering order. Use `ReversedNumberedEntry` when you want recent items to have higher numbers.
+  </Tab>
+  <Tab title="NumberedEntry vs BulletEntry">
+    **NumberedEntry**: Displays items with sequential numbers (1, 2, 3...)
+    
+    **BulletEntry**: Displays items with bullet points
+    
+    Use `NumberedEntry` when the order or count matters. Use `BulletEntry` for unordered lists.
+  </Tab>
+  <Tab title="NumberedEntry vs PublicationEntry">
+    **NumberedEntry**: Simple numbered text entries
+    
+    **PublicationEntry**: Structured publication data with title, authors, journal, DOI, etc.
+    
+    Use `NumberedEntry` for simple numbered lists. Use `PublicationEntry` when you need structured bibliographic data.
+  </Tab>
+</Tabs>
+
+## Tips
+
+<AccordionGroup>
+  <Accordion title="When to use NumberedEntry">
+    - You want simple sequential numbering without complex structure
+    - The numbering should go 1, 2, 3... from top to bottom
+    - You don't need fields like dates, locations, or highlights
+  </Accordion>
+  
+  <Accordion title="Markdown support">
+    You can use Markdown formatting in the `number` field:
+    
+    ```yaml
+    - number: "**Bold publication title** in *Italic Journal Name*, 2023"
+    - number: "Patent with [link to details](https://example.com)"
+    ```
+  </Accordion>
+  
+  <Accordion title="Alternative: Use PublicationEntry">
+    For publications, consider using `PublicationEntry` instead, which provides:
+    - Structured fields (title, authors, journal, etc.)
+    - Automatic formatting
+    - DOI support
+    - Author name highlighting
+    
+    See [PublicationEntry](/entries/publication) for details.
+  </Accordion>
+</AccordionGroup>
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="ReversedNumberedEntry" icon="arrow-down-9-1" href="/entries/reversed-numbered">
+    Numbered entries with reverse numbering
+  </Card>
+  <Card title="BulletEntry" icon="list" href="/entries/bullet">
+    Simple bullet point lists
+  </Card>
+  <Card title="PublicationEntry" icon="book" href="/entries/publication">
+    Structured publication entries
+  </Card>
+  <Card title="Entry Types Overview" icon="grid" href="/entries/overview">
+    Compare all entry types
+  </Card>
+</CardGroup>

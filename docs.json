@@ -60,7 +60,9 @@
               "entries/publication",
               "entries/normal",
               "entries/one-line",
-              "entries/bullet"
+              "entries/bullet",
+              "entries/numbered",
+              "entries/reversed-numbered"
             ]
           }
         ]
