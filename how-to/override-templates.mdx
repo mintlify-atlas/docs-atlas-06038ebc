@@ -1,0 +1,466 @@
+---
+title: Override Default Templates
+description: Customize Typst templates for complete control over CV layout and appearance without creating a full custom theme
+---
+
+When design options don't provide enough control, you can override the default Typst templates to fully customize your CV's appearance. This gives you direct access to modify how your CV is rendered without the overhead of creating a reusable theme.
+
+## When to Override Templates
+
+Use template overriding when you need to:
+
+- Change the fundamental layout structure
+- Add custom Typst functions or packages
+- Modify how entries are rendered beyond what `design.templates` allows
+- Create completely custom designs not achievable through design options
+
+<Note>
+  For simpler customizations, try these first:
+  - [`design`](/api/design-model) for colors, fonts, spacing
+  - [`design.templates`](/guides/design-customization) for changing entry text layout
+  - [Arbitrary Keys](/how-to/arbitrary-keys) for adding custom fields to entries
+</Note>
+
+## Two Methods
+
+There are two ways to override templates, depending on your needs:
+
+<CardGroup cols={2}>
+  <Card title="Method 1: Quick Customization" icon="bolt">
+    Tweak an existing theme's templates without creating a full custom theme. Best for one-off CVs.
+  </Card>
+  <Card title="Method 2: Custom Theme" icon="palette">
+    Create a reusable theme with its own design options. Best for multiple CVs or sharing.
+  </Card>
+</CardGroup>
+
+## Method 1: Quick Template Customization
+
+This method creates template files alongside your CV that RenderCV automatically uses instead of the built-in ones.
+
+<Steps>
+  <Step title="Generate templates">
+    Run the `new` command with the `--create-typst-templates` flag:
+
+    ```bash
+    rendercv new "Your Name" --create-typst-templates
+    ```
+
+    This creates:
+    ```
+    Your_Name_CV.yaml
+    classic/
+      Preamble.j2.typ
+      Header.j2.typ
+      SectionBeginning.j2.typ
+      SectionEnding.j2.typ
+      entries/
+        BulletEntry.j2.typ
+        EducationEntry.j2.typ
+        ExperienceEntry.j2.typ
+        NormalEntry.j2.typ
+        OneLineEntry.j2.typ
+        PublicationEntry.j2.typ
+        NumberedEntry.j2.typ
+        ReversedNumberedEntry.j2.typ
+    ```
+
+    <Tip>
+      The folder name matches your theme (e.g., `classic/`, `moderncv/`, etc.). If you change themes in your YAML, generate templates for that theme instead.
+    </Tip>
+  </Step>
+
+  <Step title="Modify templates">
+    Edit any template file in the theme folder. For example, to customize the header:
+
+    ```typst classic/Header.j2.typ
+    #rendercv-header(
+      name: [{{ cv.name }}],
+      headline: [{{ cv.headline }}],
+      {% if cv.photo %}
+      // Add a custom border around the photo
+      photo: box(
+        stroke: 2pt + {{ design.colors.name.as_rgb() }},
+        radius: 50%,
+        clip: true,
+        image("{{ cv.photo }}")
+      ),
+      {% endif %}
+      connections: (
+    {% for connection in cv.connections %}
+        ({{ connection.clean_url }}, [{{ connection.rendered_value }}]),
+    {% endfor %}
+      ),
+    )
+    ```
+
+    <Warning>
+      Templates use [Jinja2](https://jinja.palletsprojects.com/) syntax combined with [Typst](https://typst.app/) code. Make sure you understand both syntaxes.
+    </Warning>
+  </Step>
+
+  <Step title="Delete unused templates">
+    Remove any template files you don't need to customize. RenderCV will automatically fall back to the built-in versions.
+
+    For example, if you only want to customize the header:
+    ```bash
+    rm classic/SectionBeginning.j2.typ
+    rm classic/SectionEnding.j2.typ
+    rm -rf classic/entries/
+    ```
+  </Step>
+
+  <Step title="Render your CV">
+    Render as usual:
+
+    ```bash
+    rendercv render Your_Name_CV.yaml
+    ```
+
+    RenderCV automatically uses your local templates instead of the built-in ones.
+  </Step>
+</Steps>
+
+### For Existing CVs
+
+If you already have a YAML file and want to add template overrides:
+
+```bash
+# Generate only templates (no new YAML file)
+rendercv new "John Doe" --create-typst-templates
+
+# Then delete the generated YAML file
+rm John_Doe_CV.yaml
+```
+
+The templates remain in the `classic/` folder for your existing YAML file to use.
+
+## Method 2: Create a Custom Theme
+
+This method is better when building a reusable theme with its own design options. See the [Custom Themes](/how-to/custom-themes) guide for complete details.
+
+<Steps>
+  <Step title="Create the theme">
+    ```bash
+    rendercv create-theme mytheme
+    ```
+
+    This creates:
+    ```
+    mytheme/
+      __init__.py
+      Preamble.j2.typ
+      Header.j2.typ
+      SectionBeginning.j2.typ
+      SectionEnding.j2.typ
+      entries/
+        BulletEntry.j2.typ
+        EducationEntry.j2.typ
+        ExperienceEntry.j2.typ
+        NormalEntry.j2.typ
+        OneLineEntry.j2.typ
+        PublicationEntry.j2.typ
+        NumberedEntry.j2.typ
+        ReversedNumberedEntry.j2.typ
+    ```
+  </Step>
+
+  <Step title="Modify templates and design options">
+    - Edit template files to customize the layout
+    - Optionally edit `__init__.py` to add custom design options
+  </Step>
+
+  <Step title="Use in your YAML">
+    ```yaml
+    design:
+      theme: mytheme
+      # Your custom design options work here
+    ```
+  </Step>
+
+  <Step title="Render">
+    ```bash
+    rendercv render Your_Name_CV.yaml
+    ```
+  </Step>
+</Steps>
+
+## Template Structure
+
+All templates use Jinja2 syntax to generate Typst code:
+
+### Main Templates
+
+<AccordionGroup>
+  <Accordion title="Preamble.j2.typ">
+    The document preamble sets up page configuration, colors, fonts, and Typst functions.
+
+    ```typst
+    #show: rendercv.with(
+      page-size: "{{ design.page.size }}",
+      page-top-margin: {{ design.page.top_margin.as_pt() }}pt,
+      page-bottom-margin: {{ design.page.bottom_margin.as_pt() }}pt,
+      colors-body: {{ design.colors.body.as_rgb() }},
+      colors-name: {{ design.colors.name.as_rgb() }},
+      typography-font-family-body: "{{ design.typography.font_family.body }}",
+      // ... more configuration
+    )
+    ```
+
+    This is where you:
+    - Configure page dimensions and margins
+    - Set colors and fonts
+    - Import custom Typst packages
+    - Define reusable Typst functions
+  </Accordion>
+
+  <Accordion title="Header.j2.typ">
+    Renders the CV header with your name, headline, photo, and connections.
+
+    ```typst
+    #rendercv-header(
+      name: [{{ cv.name }}],
+      headline: [{{ cv.headline }}],
+      {% if cv.photo %}
+      photo: image("{{ cv.photo }}"),
+      {% endif %}
+      connections: (
+    {% for connection in cv.connections %}
+        ({{ connection.clean_url }}, [{{ connection.rendered_value }}]),
+    {% endfor %}
+      ),
+    )
+    ```
+  </Accordion>
+
+  <Accordion title="SectionBeginning.j2.typ">
+    Renders the section title and opening markup.
+
+    ```typst
+    #section-beginning("{{ section_title }}")
+    ```
+
+    Variables available:
+    - `section_title`: The section name (e.g., "Experience")
+    - `snake_case_section_title`: Snake case version (e.g., "work_experience")
+    - `entry_type`: The entry type (e.g., "ExperienceEntry")
+  </Accordion>
+
+  <Accordion title="SectionEnding.j2.typ">
+    Closes the section.
+
+    ```typst
+    #section-ending()
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Entry Templates
+
+Each entry type has its own template in the `entries/` subdirectory:
+
+```typst entries/ExperienceEntry.j2.typ
+#regular-entry(
+  [
+{% for line in entry.main_column.splitlines() %}
+    {{ line }}
+{% endfor %}
+  ],
+  [
+{% for line in entry.date_and_location_column.splitlines() %}
+    {{ line }}
+{% endfor %}
+  ],
+)
+```
+
+The `entry` variable contains all processed data for the entry, including:
+- `entry.main_column`: Rendered left column text
+- `entry.date_and_location_column`: Rendered right column text
+
+<Tip>
+  Entry templates receive pre-formatted text from `design.templates` settings. The Jinja2 template just wraps this text in Typst functions.
+</Tip>
+
+## Variables Available in Templates
+
+All templates have access to these variables:
+
+| Variable | Type | Description | Example |
+|----------|------|-------------|---------|
+| `cv` | Object | Complete CV data | `{{ cv.name }}`, `{{ cv.sections }}` |
+| `design` | Object | All design options | `{{ design.colors.body.as_rgb() }}` |
+| `locale` | Object | Locale strings | `{{ locale.month_abbreviations }}` |
+| `settings` | Object | Rendering settings | `{{ settings.render_command }}` |
+| `entry` | Object | Current entry (entry templates only) | `{{ entry.company }}` |
+| `section_title` | String | Section name (section templates only) | `{{ section_title }}` |
+
+### Accessing Design Options
+
+Design options use helper methods for Typst compatibility:
+
+```typst
+// Colors
+{{ design.colors.body.as_rgb() }}  // Output: rgb(0, 0, 0)
+
+// Dimensions
+{{ design.page.top_margin.as_pt() }}pt  // Output: 50.4pt
+{{ design.page.left_margin.as_cm() }}cm  // Output: 1.77cm
+
+// Fonts
+{{ design.typography.font_family.body }}  // Output: Source Sans 3
+```
+
+## Markdown Templates
+
+Both methods also support Markdown template customization:
+
+```bash
+# Method 1: Quick customization
+rendercv new "Your Name" --create-markdown-templates
+
+# Method 2: Available in custom themes automatically
+rendercv create-theme mytheme
+```
+
+Markdown templates follow the same structure but generate Markdown instead of Typst.
+
+## Examples
+
+### Example 1: Custom Entry Layout
+
+Modify `entries/ExperienceEntry.j2.typ` to add a colored sidebar:
+
+```typst
+#grid(
+  columns: (5pt, 1fr, 4cm),
+  column-gutter: 0.2cm,
+  // Colored sidebar
+  rect(
+    width: 5pt,
+    height: 100%,
+    fill: {{ design.colors.section_titles.as_rgb() }}
+  ),
+  // Main content
+  [
+{% for line in entry.main_column.splitlines() %}
+    {{ line }}
+{% endfor %}
+  ],
+  // Dates and location
+  [
+{% for line in entry.date_and_location_column.splitlines() %}
+    {{ line }}
+{% endfor %}
+  ],
+)
+```
+
+### Example 2: Add Icons to Section Titles
+
+Modify `SectionBeginning.j2.typ`:
+
+```typst
+{% set icons = {
+  "Experience": "💼",
+  "Education": "🎓",
+  "Projects": "🚀",
+  "Skills": "⚙️"
+} %}
+
+#section-beginning(
+  {% if section_title in icons %}
+  "{{ icons[section_title] }} {{ section_title }}"
+  {% else %}
+  "{{ section_title }}"
+  {% endif %}
+)
+```
+
+### Example 3: Custom Photo Shape
+
+Modify `Header.j2.typ` to make the photo circular:
+
+```typst
+#rendercv-header(
+  name: [{{ cv.name }}],
+  headline: [{{ cv.headline }}],
+  {% if cv.photo %}
+  photo: box(
+    radius: 50%,  // Makes it circular
+    clip: true,
+    width: {{ design.header.photo_width.as_cm() }}cm,
+    height: {{ design.header.photo_width.as_cm() }}cm,
+    image("{{ cv.photo }}", fit: "cover")
+  ),
+  {% endif %}
+  connections: (
+{% for connection in cv.connections %}
+    ({{ connection.clean_url }}, [{{ connection.rendered_value }}]),
+{% endfor %}
+  ),
+)
+```
+
+## Tips
+
+<CardGroup cols={2}>
+  <Card title="Start Small" icon="seedling">
+    Copy templates and make small changes. Test frequently to catch errors early.
+  </Card>
+  <Card title="Use --watch Mode" icon="eye">
+    Use `rendercv render --watch` to see changes in real-time while editing templates.
+  </Card>
+  <Card title="Keep Backups" icon="copy">
+    Keep a copy of working templates before making major changes.
+  </Card>
+  <Card title="Delete Unused Templates" icon="trash">
+    Remove templates you don't customize. RenderCV falls back to built-in versions automatically.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Templates not being used">
+    - Verify the folder name matches your theme (e.g., `classic/` for `theme: classic`)
+    - Ensure template files have `.j2.typ` extension
+    - Check that templates are in the same directory as your YAML file
+  </Accordion>
+
+  <Accordion title="Jinja2 syntax errors">
+    - Make sure Jinja2 tags are properly closed: `{% if %}...{% endif %}`
+    - Check for matching quote types: use `"` or `'` consistently
+    - Validate template syntax with `rendercv render`—it will show Jinja2 errors
+  </Accordion>
+
+  <Accordion title="Typst compilation errors">
+    - Run `rendercv render` to see Typst error messages
+    - Check Typst function names and arguments
+    - Verify color/dimension conversion methods: `.as_rgb()`, `.as_pt()`, etc.
+  </Accordion>
+
+  <Accordion title="Variables not accessible">
+    Check the template type:
+    - `entry` variable only available in entry templates (`entries/*.j2.typ`)
+    - `section_title` only available in `SectionBeginning.j2.typ` and `SectionEnding.j2.typ`
+    - `cv`, `design`, `locale`, `settings` available in all templates
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Themes" icon="palette" href="/how-to/custom-themes">
+    Create a reusable theme with custom design options
+  </Card>
+  <Card title="Arbitrary Keys" icon="key" href="/how-to/arbitrary-keys">
+    Add custom fields to CV entries
+  </Card>
+  <Card title="Typst Documentation" icon="book" href="https://typst.app/docs">
+    Learn Typst syntax and functions
+  </Card>
+  <Card title="Jinja2 Documentation" icon="file-code" href="https://jinja.palletsprojects.com/">
+    Master Jinja2 templating
+  </Card>
+</CardGroup>

@@ -1,0 +1,268 @@
+---
+title: "Data Models"
+description: "Overview of RenderCV's Pydantic-based data model architecture for type-safe CV validation and processing"
+---
+
+## Overview
+
+RenderCV uses [Pydantic v2](https://docs.pydantic.dev/) to define its data model architecture. All models inherit from custom base classes that provide consistent validation behavior and error handling.
+
+## Base Model Classes
+
+RenderCV defines two fundamental base classes for all models:
+
+### BaseModelWithoutExtraKeys
+
+The primary base class for most RenderCV models. It forbids extra keys and validates all defaults.
+
+```python
+class BaseModelWithoutExtraKeys(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(
+        extra="forbid",
+        validate_default=True
+    )
+```
+
+**Location:** `src/rendercv/schema/models/base.py:4`
+
+**Key Features:**
+- **Strict validation**: Rejects any fields not defined in the model schema
+- **Default validation**: All default values are validated during model creation
+- **Used by**: CV, Design, Locale, Settings, and most configuration models
+
+### BaseModelWithExtraKeys
+
+Used for entry models that accept arbitrary custom fields.
+
+```python
+class BaseModelWithExtraKeys(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict(
+        extra="allow",
+        validate_default=True
+    )
+```
+
+**Location:** `src/rendercv/schema/models/base.py:8`
+
+**Key Features:**
+- **Flexible fields**: Allows users to add custom fields to entries
+- **Custom placeholders**: Extra fields can be used as template placeholders
+- **Used by**: All entry types (ExperienceEntry, EducationEntry, etc.)
+
+## Core Model Hierarchy
+
+The RenderCV data model follows this structure:
+
+```
+RenderCVModel
+├── cv: Cv
+│   ├── name: str
+│   ├── headline: str
+│   ├── sections: dict[str, Section]
+│   └── ...
+├── design: Design
+│   ├── theme: str
+│   ├── page: Page
+│   ├── typography: Typography
+│   └── ...
+├── locale: Locale
+│   ├── language: str
+│   ├── month_names: list[str]
+│   └── ...
+└── settings: Settings
+    └── render_command: RenderCommand
+```
+
+## RenderCVModel
+
+The top-level model that orchestrates all CV components.
+
+```python
+class RenderCVModel(BaseModelWithoutExtraKeys):
+    cv: Cv = pydantic.Field(
+        default_factory=Cv,
+        title="CV",
+        description="The content of the CV."
+    )
+    design: Design = pydantic.Field(
+        default_factory=ClassicTheme,
+        title="Design",
+        description="The design information of the CV."
+    )
+    locale: Locale = pydantic.Field(
+        default_factory=EnglishLocale,
+        title="Locale Catalog",
+        description="Locale catalog for multiple language support."
+    )
+    settings: Settings = pydantic.Field(
+        default_factory=Settings,
+        title="RenderCV Settings",
+        description="The settings of RenderCV."
+    )
+```
+
+**Location:** `src/rendercv/schema/models/rendercv_model.py:14`
+
+### Private Attributes
+
+RenderCVModel stores the input file path for resolving relative paths:
+
+```python
+_input_file_path: pathlib.Path | None = pydantic.PrivateAttr(default=None)
+```
+
+This enables photo path resolution and custom theme loading relative to the input file location.
+
+## Model Building Pipeline
+
+RenderCV provides a complete pipeline for building validated models from YAML:
+
+### build_rendercv_dictionary_and_model
+
+Complete pipeline from raw YAML to validated model.
+
+```python
+def build_rendercv_dictionary_and_model(
+    main_yaml_file: str,
+    *,
+    input_file_path: pathlib.Path | None = None,
+    **kwargs: Unpack[BuildRendercvModelArguments],
+) -> tuple[CommentedMap, RenderCVModel]:
+    """Complete pipeline from raw YAML string to validated model.
+    
+    Returns:
+        Tuple of merged dictionary and validated model.
+    """
+```
+
+**Location:** `src/rendercv/schema/rendercv_model_builder.py:192`
+
+**Parameters:**
+- `main_yaml_file`: Primary CV YAML content as string
+- `input_file_path`: Source file path for validation context
+- `design_yaml_file`: Optional design overlay YAML
+- `locale_yaml_file`: Optional locale overlay YAML
+- `settings_yaml_file`: Optional settings overlay YAML
+- `output_folder`: Override output directory
+- `overrides`: Dict of CLI overrides (e.g., `{"cv.name": "John Doe"}`)
+
+### Validation Context
+
+The validation pipeline uses a context object to pass metadata:
+
+```python
+validation_context = {
+    "context": ValidationContext(
+        input_file_path=input_file_path,
+        current_date=commented_map.get("settings", {}).get(
+            "current_date", "today"
+        ),
+    )
+}
+model = RenderCVModel.model_validate(
+    commented_map, 
+    context=validation_context
+)
+```
+
+**Location:** `src/rendercv/schema/rendercv_model_builder.py:176-184`
+
+## Error Handling
+
+RenderCV transforms Pydantic validation errors into user-friendly messages with YAML location information:
+
+```python
+try:
+    model = RenderCVModel.model_validate(commented_map, context=validation_context)
+except pydantic.ValidationError as e:
+    validation_errors = parse_validation_errors(e, commented_map, overlay_sources)
+    raise RenderCVUserValidationError(validation_errors) from e
+```
+
+**Location:** `src/rendercv/schema/rendercv_model_builder.py:175-187`
+
+### Error Location Tracking
+
+The `CommentedMap` from ruamel.yaml preserves line and column numbers:
+
+```python
+def get_yaml_error_location(error: ruamel.yaml.YAMLError) -> YamlLocation | None:
+    """Extract 1-indexed line/column coordinates from ruamel parser errors."""
+    context_mark = getattr(error, "context_mark", None)
+    problem_mark = getattr(error, "problem_mark", None)
+    # ...
+    return (
+        (start_mark.line + 1, start_mark.column + 1),
+        (end_mark.line + 1, end_mark.column + 1),
+    )
+```
+
+**Location:** `src/rendercv/schema/rendercv_model_builder.py:42`
+
+## YAML Overlay System
+
+RenderCV supports separate YAML files for design, locale, and settings:
+
+```python
+yaml_overlays: dict[OverlaySourceKey, str | None] = {
+    "settings": kwargs.get("settings_yaml_file"),
+    "design": kwargs.get("design_yaml_file"),
+    "locale": kwargs.get("locale_yaml_file"),
+}
+
+for key, yaml_content in yaml_overlays.items():
+    if yaml_content:
+        overlay_cm = read_yaml_with_validation_errors(
+            yaml_content, OVERLAY_SOURCE_TO_YAML_SOURCE[key]
+        )
+        input_dict[key] = overlay_cm[key]
+        overlay_sources[key] = overlay_cm
+```
+
+**Location:** `src/rendercv/schema/rendercv_model_builder.py:120-133`
+
+## Type Safety
+
+All models benefit from Pydantic's type safety:
+
+<Tabs>
+  <Tab title="Runtime Validation">
+    ```python
+    # Invalid email is caught
+    cv = Cv(email="not-an-email")
+    # ValidationError: value is not a valid email address
+    ```
+  </Tab>
+  <Tab title="IDE Autocomplete">
+    ```python
+    # Type hints enable IDE autocomplete
+    rendercv_model.cv.name  # str | None
+    rendercv_model.design.theme  # str
+    rendercv_model.locale.language  # Literal[...]
+    ```
+  </Tab>
+  <Tab title="JSON Schema Generation">
+    ```python
+    # Generate JSON Schema for validation
+    schema = RenderCVModel.model_json_schema()
+    # Used for VS Code YAML validation
+    ```
+  </Tab>
+</Tabs>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="CV Model" icon="address-card" href="/api/cv-model">
+    Detailed CV structure and fields
+  </Card>
+  <Card title="Design Model" icon="palette" href="/api/design-model">
+    Theme customization options
+  </Card>
+  <Card title="Locale Model" icon="language" href="/api/locale-model">
+    Internationalization support
+  </Card>
+  <Card title="Renderer" icon="file-pdf" href="/api/renderer">
+    Output generation pipeline
+  </Card>
+</CardGroup>

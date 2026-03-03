@@ -1,0 +1,425 @@
+---
+title: "Renderer"
+description: "Document generation pipeline for converting CV models to PDF, Markdown, HTML, and PNG formats"
+---
+
+## Overview
+
+The RenderCV renderer is responsible for transforming validated CV models into multiple output formats:
+
+- **Typst** (.typ) - Intermediate typesetting format
+- **PDF** (.pdf) - Primary output format via Typst compilation
+- **Markdown** (.md) - Human-readable text format
+- **HTML** (.html) - Web-friendly format with styling
+- **PNG** (.png) - Image format for previews
+
+## Rendering Pipeline
+
+The rendering process follows this sequence:
+
+```
+RenderCVModel
+    ↓
+[Templater: Jinja2 Processing]
+    ↓
+┌───────────┬──────────────┐
+│           │              │
+Typst      Markdown      HTML
+│           │              │
+↓           ↓              ↓
+PDF        (used for     (standalone)
+│           HTML)
+↓
+PNG
+```
+
+## Typst Generation
+
+Typst is the primary intermediate format for PDF and PNG generation.
+
+### generate_typst
+
+Generate Typst source file from CV model.
+
+```python
+def generate_typst(rendercv_model: RenderCVModel) -> pathlib.Path | None:
+    """Generate Typst source file from CV model via Jinja2 templates.
+    
+    Args:
+        rendercv_model: Validated CV model with content and design.
+    
+    Returns:
+        Path to generated Typst file, or None if generation disabled.
+    """
+    if rendercv_model.settings.render_command.dont_generate_typst:
+        return None
+    typst_path = resolve_rendercv_file_path(
+        rendercv_model, rendercv_model.settings.render_command.typst_path
+    )
+    typst_contents = render_full_template(rendercv_model, "typst")
+    typst_path.write_text(typst_contents, encoding="utf-8")
+    return typst_path
+```
+
+**Location:** `src/rendercv/renderer/typst.py:9`
+
+**Example Usage:**
+```python
+from rendercv.schema.rendercv_model_builder import build_rendercv_dictionary_and_model
+from rendercv.renderer.typst import generate_typst
+
+# Build model from YAML
+yaml_content = Path("John_Doe_CV.yaml").read_text()
+_, model = build_rendercv_dictionary_and_model(yaml_content)
+
+# Generate Typst file
+typst_path = generate_typst(model)
+print(f"Generated: {typst_path}")
+# Output: Generated: John_Doe_CV.typ
+```
+
+## PDF Generation
+
+PDF is the primary output format, compiled from Typst source.
+
+### generate_pdf
+
+Compile Typst source to PDF using typst-py.
+
+```python
+def generate_pdf(
+    rendercv_model: RenderCVModel, 
+    typst_path: pathlib.Path | None
+) -> pathlib.Path | None:
+    """Compile Typst source to PDF using typst-py compiler.
+    
+    Args:
+        rendercv_model: CV model for path resolution and photo handling.
+        typst_path: Path to Typst source file to compile.
+    
+    Returns:
+        Path to generated PDF file, or None if generation disabled.
+    """
+    if rendercv_model.settings.render_command.dont_generate_pdf or typst_path is None:
+        return None
+    pdf_path = resolve_rendercv_file_path(
+        rendercv_model, rendercv_model.settings.render_command.pdf_path
+    )
+    typst_compiler = get_typst_compiler(
+        rendercv_model._input_file_path, typst_path.parent
+    )
+    copy_photo_next_to_typst_file(rendercv_model, typst_path)
+    typst_compiler.compile(input=typst_path, format="pdf", output=pdf_path)
+    return pdf_path
+```
+
+**Location:** `src/rendercv/renderer/pdf_png.py:14`
+
+**Example Usage:**
+```python
+from rendercv.renderer.pdf_png import generate_pdf
+
+# Compile PDF from Typst
+pdf_path = generate_pdf(model, typst_path)
+print(f"Generated: {pdf_path}")
+# Output: Generated: John_Doe_CV.pdf
+```
+
+### Typst Compiler Configuration
+
+The compiler is cached and configured with font paths:
+
+```python
+@functools.lru_cache(maxsize=1)
+def get_typst_compiler(
+    input_file_path: pathlib.Path | None,
+    root: pathlib.Path,
+) -> typst.Compiler:
+    """Create cached Typst compiler with font paths configured.
+    
+    Args:
+        input_file_path: Original input file path for relative font resolution.
+        root: Root directory for Typst project.
+    
+    Returns:
+        Configured Typst compiler instance.
+    """
+    return typst.Compiler(
+        root=root,
+        font_paths=[
+            *rendercv_fonts.paths_to_font_folders,
+            (
+                input_file_path.parent / "fonts"
+                if input_file_path
+                else pathlib.Path.cwd() / "fonts"
+            ),
+        ],
+    )
+```
+
+**Location:** `src/rendercv/renderer/pdf_png.py:113`
+
+**Font Resolution:**
+1. Package fonts from `rendercv-fonts`
+2. User fonts from `fonts/` directory next to input file
+
+## PNG Generation
+
+PNG format enables CV preview in web applications and README files.
+
+### generate_png
+
+Compile Typst source to PNG images.
+
+```python
+def generate_png(
+    rendercv_model: RenderCVModel, 
+    typst_path: pathlib.Path | None
+) -> list[pathlib.Path] | None:
+    """Compile Typst source to PNG images using typst-py compiler.
+    
+    Args:
+        rendercv_model: CV model for path resolution and photo handling.
+        typst_path: Path to Typst source file to compile.
+    
+    Returns:
+        List of paths to generated PNG files, or None if generation disabled.
+    """
+    if rendercv_model.settings.render_command.dont_generate_png or typst_path is None:
+        return None
+    png_path = resolve_rendercv_file_path(
+        rendercv_model, rendercv_model.settings.render_command.png_path
+    )
+    
+    # Remove existing PNG files
+    pattern = f"{png_path.stem}_*.png"
+    for existing_png_file in png_path.parent.glob(pattern):
+        if existing_png_file.is_file():
+            existing_png_file.unlink()
+    
+    typst_compiler = get_typst_compiler(
+        rendercv_model._input_file_path, typst_path.parent
+    )
+    copy_photo_next_to_typst_file(rendercv_model, typst_path)
+    png_files_bytes = typst_compiler.compile(input=typst_path, format="png")
+    
+    # Write PNG files with sequential numbering
+    png_files = []
+    for i, png_file_bytes in enumerate(png_files_bytes):
+        png_file = png_path.parent / (png_path.stem + f"_{i + 1}.png")
+        png_file.write_bytes(png_file_bytes)
+        png_files.append(png_file)
+    
+    return png_files if png_files else None
+```
+
+**Location:** `src/rendercv/renderer/pdf_png.py:45`
+
+**Output Format:**
+Multi-page CVs produce multiple PNG files:
+- `John_Doe_CV_1.png`
+- `John_Doe_CV_2.png`
+- `John_Doe_CV_3.png`
+
+## Markdown Generation
+
+Markdown provides human-readable CV format for version control.
+
+### generate_markdown
+
+Generate Markdown file from CV model.
+
+```python
+def generate_markdown(rendercv_model: RenderCVModel) -> pathlib.Path | None:
+    """Generate Markdown file from CV model via Jinja2 templates.
+    
+    Args:
+        rendercv_model: Validated CV model with content.
+    
+    Returns:
+        Path to generated Markdown file, or None if generation disabled.
+    """
+    if rendercv_model.settings.render_command.dont_generate_markdown:
+        return None
+    markdown_path = resolve_rendercv_file_path(
+        rendercv_model, rendercv_model.settings.render_command.markdown_path
+    )
+    markdown_contents = render_full_template(rendercv_model, "markdown")
+    markdown_path.write_text(markdown_contents, encoding="utf-8")
+    return markdown_path
+```
+
+**Location:** `src/rendercv/renderer/markdown.py:9`
+
+## HTML Generation
+
+HTML format enables web hosting and sharing CVs online.
+
+### generate_html
+
+Convert Markdown to HTML with styling.
+
+```python
+def generate_html(
+    rendercv_model: RenderCVModel, 
+    markdown_path: pathlib.Path | None
+) -> pathlib.Path | None:
+    """Generate HTML file from Markdown source with styling.
+    
+    Args:
+        rendercv_model: CV model for path resolution and rendering context.
+        markdown_path: Path to Markdown source file.
+    
+    Returns:
+        Path to generated HTML file, or None if generation disabled.
+    """
+    if (
+        rendercv_model.settings.render_command.dont_generate_html
+        or markdown_path is None
+    ):
+        return None
+    html_path = resolve_rendercv_file_path(
+        rendercv_model, rendercv_model.settings.render_command.html_path
+    )
+    html_contents = render_html(
+        rendercv_model, markdown_path.read_text(encoding="utf-8")
+    )
+    html_path.write_text(html_contents, encoding="utf-8")
+    return html_path
+```
+
+**Location:** `src/rendercv/renderer/html.py:9`
+
+### HTML Rendering Process
+
+HTML generation involves two steps:
+
+1. **Markdown to HTML conversion** via Python-Markdown
+2. **Template wrapping** with CSS and metadata
+
+```python
+def render_html(rendercv_model: RenderCVModel, markdown: str) -> str:
+    """Convert Markdown to HTML and wrap with full HTML template."""
+    html_body = markdown_to_html(markdown)
+    return render_single_template(
+        "html", "Full.html", rendercv_model, html_body=html_body
+    )
+```
+
+**Location:** `src/rendercv/renderer/templater/templater.py:131`
+
+## Photo Handling
+
+CV photos require special handling for Typst compilation:
+
+```python
+def copy_photo_next_to_typst_file(
+    rendercv_model: RenderCVModel, 
+    typst_path: pathlib.Path
+) -> None:
+    """Copy CV photo to Typst file directory for compilation.
+    
+    Why:
+        Typst compiler resolves image paths relative to source file location.
+        Copying photo ensures compilation succeeds regardless of original
+        photo location.
+    """
+    photo_path = rendercv_model.cv.photo
+    if isinstance(photo_path, pathlib.Path):
+        copy_to = typst_path.parent / photo_path.name
+        if photo_path != copy_to:
+            shutil.copy(photo_path, copy_to)
+```
+
+**Location:** `src/rendercv/renderer/pdf_png.py:92`
+
+## Complete Rendering Example
+
+<CodeGroup>
+```python Full Pipeline
+from pathlib import Path
+from rendercv.schema.rendercv_model_builder import build_rendercv_dictionary_and_model
+from rendercv.renderer.typst import generate_typst
+from rendercv.renderer.pdf_png import generate_pdf, generate_png
+from rendercv.renderer.markdown import generate_markdown
+from rendercv.renderer.html import generate_html
+
+# Load and validate CV
+input_path = Path("John_Doe_CV.yaml")
+yaml_content = input_path.read_text()
+_, model = build_rendercv_dictionary_and_model(
+    yaml_content,
+    input_file_path=input_path
+)
+
+# Generate all formats
+typst_path = generate_typst(model)
+pdf_path = generate_pdf(model, typst_path)
+png_paths = generate_png(model, typst_path)
+markdown_path = generate_markdown(model)
+html_path = generate_html(model, markdown_path)
+
+print(f"Generated:")
+print(f"  Typst: {typst_path}")
+print(f"  PDF: {pdf_path}")
+print(f"  PNG: {', '.join(str(p) for p in png_paths)}")
+print(f"  Markdown: {markdown_path}")
+print(f"  HTML: {html_path}")
+```
+
+```python Conditional Generation
+# Disable specific formats
+model.settings.render_command.dont_generate_png = True
+model.settings.render_command.dont_generate_html = True
+
+# Only PDF and Markdown will be generated
+typst_path = generate_typst(model)
+pdf_path = generate_pdf(model, typst_path)
+png_paths = generate_png(model, typst_path)  # Returns None
+markdown_path = generate_markdown(model)
+html_path = generate_html(model, markdown_path)  # Returns None
+```
+
+```python Custom Output Paths
+# Override output paths
+model.settings.render_command.output_folder = Path("output")
+model.settings.render_command.pdf_path = Path("custom_name.pdf")
+model.settings.render_command.typst_path = Path("custom_name.typ")
+
+# Generate with custom paths
+typst_path = generate_typst(model)
+pdf_path = generate_pdf(model, typst_path)
+```
+</CodeGroup>
+
+## Performance Considerations
+
+<AccordionGroup>
+  <Accordion title="Compiler Caching">
+    The Typst compiler is cached via `@functools.lru_cache(maxsize=1)` to avoid expensive re-initialization. This enables fast multi-format generation from the same source.
+  </Accordion>
+  
+  <Accordion title="Sequential Generation">
+    Some formats depend on others:
+    - PNG requires Typst
+    - PDF requires Typst
+    - HTML requires Markdown
+    
+    The renderer handles these dependencies automatically.
+  </Accordion>
+  
+  <Accordion title="Photo URL Downloads">
+    If `cv.photo` is a URL, the templater downloads it once before rendering. The cached photo is reused across all formats.
+  </Accordion>
+</AccordionGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Templater" icon="code" href="/api/templater">
+    Jinja2 template system
+  </Card>
+  <Card title="Data Models" icon="database" href="/api/data-models">
+    Model architecture
+  </Card>
+</CardGroup>

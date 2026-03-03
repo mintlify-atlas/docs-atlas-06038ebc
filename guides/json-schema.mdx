@@ -1,0 +1,400 @@
+---
+title: JSON Schema
+description: Set up JSON Schema in your IDE for autocomplete, validation, and an enhanced editing experience when writing RenderCV YAML files.
+---
+
+RenderCV provides a JSON Schema that enables powerful IDE features while editing your CV:
+
+- **Autocomplete**: Get suggestions for all available fields
+- **Validation**: Catch errors before rendering
+- **Documentation**: Hover over fields to see descriptions
+- **Type checking**: Ensure values match expected types
+
+This dramatically improves the CV editing experience and helps you discover all available options.
+
+## What is JSON Schema?
+
+JSON Schema is a standard for describing the structure of JSON and YAML files. When your IDE knows the schema:
+
+1. It understands what fields are allowed
+2. It knows what type each field expects (string, number, list, etc.)
+3. It can suggest completions as you type
+4. It validates your input in real-time
+
+RenderCV's schema describes the complete structure of CV YAML files, including all themes and options.
+
+## Setup Instructions
+
+<Tabs>
+  <Tab title="VS Code (Auto)">
+    ### Automatic Setup
+
+    The easiest way to use RenderCV's schema in VS Code:
+
+    1. **Install the YAML extension**:
+       - Open VS Code
+       - Go to Extensions (Cmd+Shift+X or Ctrl+Shift+X)
+       - Search for "YAML" by Red Hat
+       - Install it
+
+    2. **Name your file ending with `_CV.yaml`**:
+       ```
+       John_Doe_CV.yaml
+       Jane_Smith_CV.yaml
+       My_Resume_CV.yaml
+       ```
+
+    3. **Start typing!**
+       - The schema activates automatically
+       - Press `Ctrl+Space` to trigger autocomplete
+
+    That's it! The YAML extension automatically detects RenderCV files.
+
+    <Note>
+      The `_CV.yaml` naming pattern is recognized automatically by the extension. Any file with this suffix will get schema support.
+    </Note>
+  </Tab>
+
+  <Tab title="VS Code (Manual)">
+    ### Manual Setup
+
+    If you prefer a different file name:
+
+    1. **Install the YAML extension** (same as Auto tab)
+
+    2. **Add schema comment** at the top of your YAML file:
+       ```yaml
+       # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+       
+       cv:
+         name: John Doe
+         # ...
+       ```
+
+    3. **Start editing**:
+       - Press `Ctrl+Space` for autocomplete
+       - Hover over fields for documentation
+  </Tab>
+
+  <Tab title="JetBrains IDEs">
+    ### PyCharm, IntelliJ IDEA, WebStorm
+
+    1. **Add schema comment** at the top of your YAML file:
+       ```yaml
+       # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+       
+       cv:
+         name: John Doe
+       ```
+
+    2. **Enable YAML support**:
+       - Go to Settings → Languages & Frameworks → Schemas and DTDs → JSON Schema Mappings
+       - Verify YAML files are supported
+
+    3. **Start editing**:
+       - Press `Ctrl+Space` for autocomplete
+       - IntelliJ will validate your YAML in real-time
+  </Tab>
+
+  <Tab title="Other Editors">
+    ### Sublime Text, Vim, Emacs, etc.
+
+    Most modern editors support JSON Schema through plugins:
+
+    1. **Install a YAML plugin** that supports JSON Schema:
+       - **Sublime Text**: Install "YAML" or "LSP-yaml" package
+       - **Vim/Neovim**: Use `yaml-language-server` via coc.nvim or nvim-lspconfig
+       - **Emacs**: Use `lsp-mode` with `yaml-language-server`
+
+    2. **Add schema comment** at the top of your file:
+       ```yaml
+       # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+       ```
+
+    3. **Check your plugin's documentation** for autocomplete shortcuts
+  </Tab>
+</Tabs>
+
+## Schema Features in Action
+
+### Autocomplete
+
+As you type, the IDE suggests valid field names:
+
+<Steps>
+  <Step title="Start typing a field name">
+    Type `cv:` and press Enter, then start typing...
+  </Step>
+  
+  <Step title="See suggestions">
+    The IDE shows: `name`, `headline`, `location`, `email`, `phone`, etc.
+  </Step>
+  
+  <Step title="Select and continue">
+    Choose `name:` and keep typing. Autocomplete works at every level.
+  </Step>
+</Steps>
+
+```yaml
+cv:
+  n  # ← Press Ctrl+Space
+  # Suggestions: name, sections, social_networks, custom_connections
+  
+  name: John Doe
+  sections:
+    e  # ← Press Ctrl+Space
+    # Suggestions: education, experience, projects, publications, skills
+```
+
+### Field Validation
+
+The schema validates your input:
+
+<CodeGroup>
+```yaml Valid
+design:
+  theme: classic
+  colors:
+    name: rgb(0, 79, 144)  # ✓ Valid color format
+```
+
+```yaml Invalid
+design:
+  theme: invalid_theme     # ✗ Error: Unknown theme
+  colors:
+    name: blue123          # ✗ Warning: Invalid color format
+```
+</CodeGroup>
+
+Errors appear immediately with helpful messages.
+
+### Type Checking
+
+The schema ensures correct types:
+
+```yaml
+design:
+  page:
+    top_margin: 0.7in      # ✓ String (unit required)
+    top_margin: 0.7        # ✗ Error: Must include unit
+  typography:
+    bold:
+      name: true           # ✓ Boolean
+      name: "true"         # ✗ Error: Must be boolean
+```
+
+### Hover Documentation
+
+Hover over any field to see its description:
+
+```yaml
+design:
+  theme: classic  # ← Hover here
+  # Documentation appears:
+  # "The theme to use. Options: classic, moderncv, sb2nov, 
+  #  engineeringresumes, engineeringclassic"
+```
+
+## Example Workflow
+
+Here's how JSON Schema improves your workflow:
+
+<Steps>
+  <Step title="Start with a new file">
+    Create `My_CV.yaml` and add the schema comment:
+    ```yaml
+    # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+    ```
+  </Step>
+
+  <Step title="Discover top-level fields">
+    Type and press Ctrl+Space:
+    ```yaml
+    # Shows: cv, design, locale, settings
+    ```
+  </Step>
+
+  <Step title="Explore personal info">
+    ```yaml
+    cv:
+      # Autocomplete shows: name, headline, location, email, phone, etc.
+    ```
+  </Step>
+
+  <Step title="Add sections with guidance">
+    ```yaml
+    cv:
+      sections:
+        experience:
+          - # Autocomplete shows: company, position, start_date, end_date, etc.
+    ```
+  </Step>
+
+  <Step title="Customize design">
+    ```yaml
+    design:
+      theme: # Autocomplete shows all 5 themes
+      colors:
+        # Autocomplete shows all color options
+    ```
+  </Step>
+
+  <Step title="Get validation as you work">
+    Typos and invalid values are highlighted immediately.
+  </Step>
+</Steps>
+
+## Schema Versions
+
+RenderCV's schema is versioned with each release:
+
+<Tabs>
+  <Tab title="Latest (Recommended)">
+    ```yaml
+    # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+    ```
+    Always use the latest version for the most up-to-date features.
+  </Tab>
+
+  <Tab title="Specific Version">
+    ```yaml
+    # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.6/schema.json
+    ```
+    Lock to a specific version if needed.
+  </Tab>
+
+  <Tab title="Development">
+    ```yaml
+    # yaml-language-server: $schema=https://github.com/rendercv/rendercv/blob/main/schema.json?raw=true
+    ```
+    Use the development version for unreleased features (not recommended for production).
+  </Tab>
+</Tabs>
+
+<Warning>
+  The schema URL in your YAML file should match your installed RenderCV version for the best experience.
+</Warning>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Autocomplete not working">
+    **Possible causes:**
+    
+    1. YAML extension not installed
+       - VS Code: Install "YAML" by Red Hat
+       - Check your editor's extension marketplace
+    
+    2. Schema comment missing or incorrect
+       - Ensure the schema line is at the very top
+       - Check for typos in the URL
+    
+    3. File not recognized as YAML
+       - Use `.yaml` or `.yml` extension
+       - Or name file ending with `_CV.yaml`
+    
+    4. Need to trigger manually
+       - Press `Ctrl+Space` (Windows/Linux) or `Cmd+Space` (macOS)
+  </Accordion>
+
+  <Accordion title="Schema not found or errors">
+    **Check these:**
+    
+    1. Internet connection required
+       - Schema is fetched from GitHub
+       - Your IDE needs internet access
+    
+    2. Schema URL correct
+       - Copy the exact URL from this page
+       - Ensure no extra spaces or characters
+    
+    3. Version compatibility
+       - Use schema version matching your RenderCV installation
+       - Update to latest: `pip install --upgrade rendercv`
+  </Accordion>
+
+  <Accordion title="Validation errors on valid YAML">
+    **Try these fixes:**
+    
+    1. Update RenderCV and schema
+       ```bash
+       pip install --upgrade rendercv
+       ```
+       Then update the schema URL to the latest version
+    
+    2. Check for YAML syntax errors
+       - Ensure proper indentation (2 spaces)
+       - Quote strings with special characters
+       - Verify list items start with `-`
+    
+    3. Clear IDE cache
+       - VS Code: Reload window (Cmd+Shift+P → "Reload Window")
+       - Other IDEs: Restart
+  </Accordion>
+
+  <Accordion title="Slow IDE performance">
+    The schema is comprehensive and may slow down large files:
+    
+    1. Split your YAML into multiple files
+    2. Disable schema temporarily while making large edits
+    3. Increase IDE memory allocation if available
+  </Accordion>
+</AccordionGroup>
+
+## Benefits Summary
+
+<CardGroup cols={2}>
+  <Card title="Faster Editing" icon="bolt">
+    Autocomplete dramatically speeds up writing your CV
+  </Card>
+  <Card title="Fewer Errors" icon="shield-check">
+    Catch typos and invalid values before rendering
+  </Card>
+  <Card title="Discover Features" icon="sparkles">
+    Find options you didn't know existed
+  </Card>
+  <Card title="Better Documentation" icon="book">
+    Hover to see field descriptions inline
+  </Card>
+</CardGroup>
+
+## Advanced: Local Schema
+
+For offline use or custom modifications:
+
+1. **Download the schema**:
+   ```bash
+   curl -O https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+   ```
+
+2. **Reference local file**:
+   ```yaml
+   # yaml-language-server: $schema=./schema.json
+   ```
+
+3. **Configure VS Code** (optional):
+   Add to `.vscode/settings.json`:
+   ```json
+   {
+     "yaml.schemas": {
+       "./schema.json": "*_CV.yaml"
+     }
+   }
+   ```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="YAML Structure" icon="code" href="/guides/yaml-structure">
+    Learn about all YAML fields and options
+  </Card>
+  <Card title="VS Code Setup" icon="laptop-code" href="/how-to/vs-code-setup">
+    Set up live preview with auto-render
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/reference/cli">
+    Render your CV from the command line
+  </Card>
+  <Card title="Examples" icon="folder" href="/examples">
+    View complete CV examples
+  </Card>
+</CardGroup>

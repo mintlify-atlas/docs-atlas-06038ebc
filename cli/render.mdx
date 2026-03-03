@@ -1,0 +1,473 @@
+---
+title: rendercv render
+description: Generate PDF, Markdown, HTML, and PNG outputs from your YAML CV file
+---
+
+The `rendercv render` command processes your YAML input file and generates multiple output formats. By default, it creates PDF, Typst, Markdown, HTML, and PNG files.
+
+## Basic Usage
+
+```bash
+rendercv render Your_CV.yaml
+```
+
+This creates a `rendercv_output/` folder with all generated files.
+
+## Output Structure
+
+By default, `rendercv render` creates:
+
+```
+rendercv_output/
+├── Your_Name_CV.pdf          # Final PDF output
+├── Your_Name_CV.typ          # Typst source file
+├── Your_Name_CV.md           # Markdown version
+├── Your_Name_CV.html         # HTML version
+├── Your_Name_CV_1.png        # First page as PNG
+└── Your_Name_CV_2.png        # Second page as PNG (if multi-page)
+```
+
+## Command Options
+
+### Input and Output
+
+<ParamField path="input_file" type="string" required>
+  Path to your YAML CV input file
+
+  ```bash
+  rendercv render John_Doe_CV.yaml
+  ```
+</ParamField>
+
+<ParamField path="--output-folder" type="string" default="rendercv_output">
+  Change the base output folder for all generated files
+
+  Short form: `-o`
+
+  ```bash
+  rendercv render CV.yaml --output-folder ~/Desktop/my_cv
+  ```
+
+  <Note>
+    This replaces the default `rendercv_output` folder entirely.
+  </Note>
+</ParamField>
+
+### Split Configuration Files
+
+<ParamField path="--design" type="string">
+  Load the `design` section from a separate YAML file
+
+  Short form: `-d`
+
+  ```bash
+  rendercv render CV.yaml --design my_design.yaml
+  ```
+
+  This is useful for:
+  - Reusing the same design across multiple CVs
+  - Keeping your main CV file focused on content
+  - Testing different designs without editing your CV
+
+  <Tip>
+    The design file should contain only the `design` section:
+
+    ```yaml
+    theme: moderncv
+    color: blue
+    # ... other design options
+    ```
+  </Tip>
+</ParamField>
+
+<ParamField path="--locale-catalog" type="string">
+  Load the `locale_catalog` section from a separate YAML file
+
+  Short form: `-lc`
+
+  ```bash
+  rendercv render CV.yaml --locale-catalog french.yaml
+  ```
+</ParamField>
+
+<ParamField path="--settings" type="string">
+  Load the `rendercv_settings` section from a separate YAML file
+
+  Short form: `-s`
+
+  ```bash
+  rendercv render CV.yaml --settings my_settings.yaml
+  ```
+</ParamField>
+
+### Custom Output Paths
+
+<ParamField path="--pdf-path" type="string">
+  Save the PDF to a custom location (relative to the input file)
+
+  Short form: `-pdf`
+
+  ```bash
+  rendercv render CV.yaml --pdf-path ~/Desktop/MyCV.pdf
+  ```
+</ParamField>
+
+<ParamField path="--typst-path" type="string">
+  Save the Typst source file to a custom location
+
+  Short form: `-typ`
+
+  ```bash
+  rendercv render CV.yaml --typst-path output/source.typ
+  ```
+</ParamField>
+
+<ParamField path="--markdown-path" type="string">
+  Save the Markdown file to a custom location
+
+  Short form: `-md`
+
+  ```bash
+  rendercv render CV.yaml --markdown-path README.md
+  ```
+</ParamField>
+
+<ParamField path="--html-path" type="string">
+  Save the HTML file to a custom location
+
+  Short form: `-html`
+
+  ```bash
+  rendercv render CV.yaml --html-path index.html
+  ```
+</ParamField>
+
+<ParamField path="--png-path" type="string">
+  Save PNG files to a custom location
+
+  Short form: `-png`
+
+  ```bash
+  rendercv render CV.yaml --png-path images/
+  ```
+
+  <Note>
+    If your CV has multiple pages, RenderCV automatically appends `_1`, `_2`, etc. to the filename.
+  </Note>
+</ParamField>
+
+### Control Output Generation
+
+<ParamField path="--dont-generate-pdf" type="flag">
+  Skip PDF generation
+
+  Short form: `-nopdf`
+
+  ```bash
+  rendercv render CV.yaml --dont-generate-pdf
+  ```
+</ParamField>
+
+<ParamField path="--dont-generate-typst" type="flag">
+  Skip Typst source file generation
+
+  Short form: `-notyp`
+
+  ```bash
+  rendercv render CV.yaml --dont-generate-typst
+  ```
+
+  <Warning>
+    Disabling Typst generation implicitly disables PDF and PNG generation, since they depend on the Typst file.
+  </Warning>
+</ParamField>
+
+<ParamField path="--dont-generate-markdown" type="flag">
+  Skip Markdown file generation
+
+  Short form: `-nomd`
+
+  ```bash
+  rendercv render CV.yaml --dont-generate-markdown
+  ```
+
+  <Warning>
+    Disabling Markdown generation implicitly disables HTML generation, since HTML is generated from Markdown.
+  </Warning>
+</ParamField>
+
+<ParamField path="--dont-generate-html" type="flag">
+  Skip HTML file generation
+
+  Short form: `-nohtml`
+
+  ```bash
+  rendercv render CV.yaml --dont-generate-html
+  ```
+</ParamField>
+
+<ParamField path="--dont-generate-png" type="flag">
+  Skip PNG file generation
+
+  Short form: `-nopng`
+
+  ```bash
+  rendercv render CV.yaml --dont-generate-png
+  ```
+</ParamField>
+
+### Auto-Reload and Verbosity
+
+<ParamField path="--watch" type="flag">
+  Automatically re-render when the input file changes
+
+  Short form: `-w`
+
+  ```bash
+  rendercv render CV.yaml --watch
+  ```
+
+  RenderCV will monitor your YAML file and any referenced files (design, locale, settings) and automatically regenerate outputs when you save changes.
+
+  <Tip>
+    This is perfect for live previewing! Keep the terminal open in one window and edit your CV in another. Your PDF viewer will automatically reload when changes are detected.
+  </Tip>
+
+  Press `Ctrl+C` to stop watching.
+</ParamField>
+
+<ParamField path="--quiet" type="flag">
+  Suppress all output messages
+
+  Short form: `-q`
+
+  ```bash
+  rendercv render CV.yaml --quiet
+  ```
+
+  Useful for:
+  - Running RenderCV in scripts
+  - CI/CD pipelines
+  - Automated workflows
+
+  <Note>
+    Error messages are still shown even in quiet mode.
+  </Note>
+</ParamField>
+
+### Override YAML Values
+
+<ParamField path="--YAMLLOCATION" type="string">
+  Override any field in your YAML file without editing it
+
+  Use dot notation to specify nested fields:
+
+  ```bash
+  # Override top-level fields
+  rendercv render CV.yaml --cv.phone "+1-555-555-5555"
+  rendercv render CV.yaml --cv.email "newemail@example.com"
+
+  # Override nested fields
+  rendercv render CV.yaml --design.theme "moderncv"
+  rendercv render CV.yaml --design.color "blue"
+
+  # Override array elements (0-indexed)
+  rendercv render CV.yaml --cv.sections.education.0.institution "MIT"
+  rendercv render CV.yaml --cv.sections.experience.0.company "Google"
+
+  # Override deeply nested values
+  rendercv render CV.yaml --design.options.header_font_size "20pt"
+  ```
+
+  <Tip>
+    This is great for:
+    - Testing different values without editing your YAML
+    - Generating multiple versions with slight variations
+    - CI/CD workflows that inject values dynamically
+  </Tip>
+
+  <Note>
+    Changes are temporary and don't modify your YAML file.
+  </Note>
+</ParamField>
+
+## Common Workflows
+
+<AccordionGroup>
+  <Accordion title="Generate only PDF">
+    ```bash
+    rendercv render CV.yaml --dont-generate-markdown --dont-generate-html --dont-generate-png
+    ```
+
+    Or using short forms:
+    ```bash
+    rendercv render CV.yaml -nomd -nohtml -nopng
+    ```
+  </Accordion>
+
+  <Accordion title="Live preview while editing">
+    ```bash
+    rendercv render CV.yaml --watch
+    ```
+
+    Open the generated PDF in a viewer that auto-reloads (like most modern PDF viewers). Edit your YAML file and save - the PDF updates automatically!
+  </Accordion>
+
+  <Accordion title="Generate HTML only for web hosting">
+    ```bash
+    rendercv render CV.yaml --dont-generate-pdf --dont-generate-png --html-path index.html
+    ```
+  </Accordion>
+
+  <Accordion title="Use a shared design across multiple CVs">
+    Create a `company_design.yaml` file:
+    ```yaml
+    theme: moderncv
+    color: blue
+    options:
+      page_size: a4paper
+    ```
+
+    Then use it for multiple CVs:
+    ```bash
+    rendercv render john_cv.yaml --design company_design.yaml
+    rendercv render jane_cv.yaml --design company_design.yaml
+    ```
+  </Accordion>
+
+  <Accordion title="Test different themes quickly">
+    ```bash
+    rendercv render CV.yaml --design.theme classic -o output_classic
+    rendercv render CV.yaml --design.theme moderncv -o output_moderncv
+    rendercv render CV.yaml --design.theme sb2nov -o output_sb2nov
+    ```
+  </Accordion>
+
+  <Accordion title="CI/CD: Generate CV in GitHub Actions">
+    ```yaml
+    - name: Render CV
+      run: rendercv render CV.yaml --quiet
+
+    - name: Upload PDF
+      uses: actions/upload-artifact@v3
+      with:
+        name: cv-pdf
+        path: rendercv_output/*.pdf
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Examples
+
+<CodeGroup>
+```bash Basic
+rendercv render John_Doe_CV.yaml
+```
+
+```bash Watch Mode
+rendercv render John_Doe_CV.yaml --watch
+```
+
+```bash PDF Only
+rendercv render CV.yaml -nomd -nohtml -nopng
+```
+
+```bash Custom Output
+rendercv render CV.yaml --output-folder ~/Desktop/my_cv
+```
+
+```bash Split Files
+rendercv render CV.yaml --design my_design.yaml --locale-catalog french.yaml
+```
+
+```bash Override Theme
+rendercv render CV.yaml --design.theme moderncv --design.color blue
+```
+
+```bash Multiple Options
+rendercv render CV.yaml --watch --dont-generate-png --quiet
+```
+</CodeGroup>
+
+## Understanding the Output
+
+When rendering completes successfully, you'll see:
+
+```
+┌─ Rendering Complete ──────────────────────────────────┐
+│ ✓ PDF generated: rendercv_output/John_Doe_CV.pdf     │
+│ ✓ Typst generated: rendercv_output/John_Doe_CV.typ   │
+│ ✓ Markdown generated: rendercv_output/John_Doe_CV.md │
+│ ✓ HTML generated: rendercv_output/John_Doe_CV.html   │
+│ ✓ PNG generated: rendercv_output/John_Doe_CV_1.png   │
+└───────────────────────────────────────────────────────┘
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: YAML file not found">
+    Make sure the path to your YAML file is correct:
+
+    ```bash
+    # Check current directory
+    ls *.yaml
+
+    # Use full path if needed
+    rendercv render ~/Documents/CVs/John_Doe_CV.yaml
+    ```
+  </Accordion>
+
+  <Accordion title="Error: Validation failed">
+    Your YAML file has syntax or structure errors. RenderCV will show you exactly what's wrong:
+
+    ```
+    Validation Error: cv.sections.education.0.degree: field required
+    ```
+
+    Check the [CV Data Structure](/api/cv-model) documentation.
+  </Accordion>
+
+  <Accordion title="PDF generation failed">
+    Make sure Typst is installed:
+
+    ```bash
+    typst --version
+    ```
+
+    If not installed, see the [installation guide](/installation).
+  </Accordion>
+
+  <Accordion title="Watch mode not detecting changes">
+    Some text editors don't trigger file system events when saving. Try:
+    - Ensuring "atomic saves" or "safe write" is disabled in your editor
+    - Manually running the render command after each change
+    - Using a different text editor
+  </Accordion>
+
+  <Accordion title="Override arguments not working">
+    Make sure you're using the correct dot notation path and quoting values with spaces:
+
+    ```bash
+    # Correct
+    rendercv render CV.yaml --cv.phone "+1 555-555-5555"
+
+    # Wrong - missing quotes
+    rendercv render CV.yaml --cv.phone +1 555-555-5555
+
+    # Wrong - incorrect path
+    rendercv render CV.yaml --phone "+1 555-555-5555"
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customize Your Design" icon="palette" href="/guides/design-customization">
+    Learn how to modify colors, fonts, spacing, and layout
+  </Card>
+  <Card title="Create a Custom Theme" icon="paintbrush" href="/cli/create-theme">
+    Build your own theme with complete design control
+  </Card>
+</CardGroup>

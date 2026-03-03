@@ -1,0 +1,501 @@
+---
+title: Themes
+description: Explore RenderCV's 5 built-in themes with examples and learn how to choose and customize them.
+---
+
+RenderCV includes 5 professionally designed themes. Each theme has different default values for colors, fonts, spacing, and layout.
+
+## Available Themes
+
+<CardGroup cols={2}>
+  <Card title="classic" icon="bookmark">
+    Traditional academic CV with clean lines
+  </Card>
+  <Card title="moderncv" icon="file-lines">
+    Inspired by the popular LaTeX ModernCV template
+  </Card>
+  <Card title="sb2nov" icon="newspaper">
+    Based on Sourabh Bajaj's popular resume template
+  </Card>
+  <Card title="engineeringresumes" icon="code">
+    Optimized for engineering and technical roles
+  </Card>
+  <Card title="engineeringclassic" icon="building">
+    Classic style tailored for engineering CVs
+  </Card>
+</CardGroup>
+
+## Using a Theme
+
+Specify the theme in your YAML file:
+
+```yaml
+design:
+  theme: classic
+```
+
+That's it! The theme applies all its default styling automatically.
+
+## How Themes Work
+
+Themes are identical in structure but differ in their default values:
+
+- If you **don't specify** a design option, the theme's default is used
+- If you **do specify** a design option, your value overrides the theme
+- This means you can start with any theme and customize only what you want
+
+<Tabs>
+  <Tab title="Using Defaults">
+    ```yaml
+    design:
+      theme: classic
+    ```
+    Uses all classic theme defaults.
+  </Tab>
+
+  <Tab title="Partial Override">
+    ```yaml
+    design:
+      theme: classic
+      colors:
+        name: rgb(255, 0, 0)  # Override just the name color
+    ```
+    Uses classic defaults except for the name color.
+  </Tab>
+
+  <Tab title="Full Customization">
+    ```yaml
+    design:
+      theme: classic
+      colors:
+        name: rgb(255, 0, 0)
+      typography:
+        font_family:
+          body: Helvetica
+      page:
+        top_margin: 1in
+    ```
+    Override multiple settings while keeping other defaults.
+  </Tab>
+</Tabs>
+
+## Theme Comparison
+
+### classic Theme
+
+The `classic` theme provides a traditional, academic look with centered header and professional typography.
+
+**Key characteristics:**
+- Centered header alignment
+- Source Sans 3 font family
+- Blue accent color `rgb(0, 79, 144)`
+- Partial line under section titles
+- Bold name and section titles
+- Shows time spans in experience section
+
+```yaml
+design:
+  theme: classic
+```
+
+<Accordion title="View classic theme defaults">
+```yaml
+page:
+  size: us-letter
+  top_margin: 0.7in
+  bottom_margin: 0.7in
+  left_margin: 0.7in
+  right_margin: 0.7in
+
+colors:
+  body: rgb(0, 0, 0)
+  name: rgb(0, 79, 144)
+  headline: rgb(0, 79, 144)
+  connections: rgb(0, 79, 144)
+  section_titles: rgb(0, 79, 144)
+  links: rgb(0, 79, 144)
+
+typography:
+  font_family:
+    body: Source Sans 3
+    name: Source Sans 3
+  font_size:
+    name: 30pt
+    body: 10pt
+  bold:
+    name: true
+    section_titles: true
+
+header:
+  alignment: center
+  connections:
+    show_icons: true
+
+section_titles:
+  type: with_partial_line
+
+sections:
+  show_time_spans_in:
+    - experience
+
+entries:
+  highlights:
+    bullet: •
+```
+</Accordion>
+
+### moderncv Theme
+
+Inspired by the popular LaTeX ModernCV template with distinctive thick section lines.
+
+**Key characteristics:**
+- Left-aligned header
+- Fontin font family
+- Black and white color scheme
+- Thick blue line under section titles (moderncv style)
+- Underlined links
+- No bold name
+
+```yaml
+design:
+  theme: moderncv
+```
+
+<Accordion title="View moderncv theme defaults">
+```yaml
+page:
+  size: us-letter
+  top_margin: 0.7in
+  bottom_margin: 0.7in
+  left_margin: 0.7in
+  right_margin: 0.7in
+
+colors:
+  body: rgb(0, 0, 0)
+  name: rgb(0, 79, 144)
+  section_titles: rgb(0, 79, 144)
+
+typography:
+  font_family:
+    body: Fontin
+    name: Fontin
+  font_size:
+    name: 25pt
+    body: 10pt
+  bold:
+    name: false
+    section_titles: false
+
+links:
+  underline: true
+
+header:
+  alignment: left
+  photo_position: left
+  connections:
+    show_icons: true
+
+section_titles:
+  type: moderncv
+  line_thickness: 0.15cm
+
+entries:
+  side_space: 0cm
+  highlights:
+    bullet: •
+```
+</Accordion>
+
+### sb2nov Theme
+
+Based on Sourabh Bajaj's popular resume template, optimized for ATS systems.
+
+**Key characteristics:**
+- Centered header
+- New Computer Modern font
+- Black and white color scheme
+- Full line under section titles
+- URLs shown instead of usernames
+- Bullet separator between connections
+
+```yaml
+design:
+  theme: sb2nov
+```
+
+<Accordion title="View sb2nov theme defaults">
+```yaml
+page:
+  size: us-letter
+  top_margin: 0.7in
+  bottom_margin: 0.7in
+  left_margin: 0.7in
+  right_margin: 0.7in
+
+colors:
+  body: rgb(0, 0, 0)
+  name: rgb(0, 0, 0)
+  section_titles: rgb(0, 0, 0)
+
+typography:
+  font_family:
+    body: New Computer Modern
+    name: New Computer Modern
+  font_size:
+    name: 30pt
+    body: 10pt
+  bold:
+    name: true
+    section_titles: true
+
+links:
+  underline: true
+
+header:
+  alignment: center
+  connections:
+    show_icons: false
+    display_urls_instead_of_usernames: true
+    separator: •
+
+section_titles:
+  type: with_full_line
+
+entries:
+  highlights:
+    bullet: ◦
+```
+</Accordion>
+
+### engineeringresumes Theme
+
+Optimized for engineering and technical resumes with tight spacing.
+
+**Key characteristics:**
+- Centered header
+- XCharter font family
+- Black text throughout
+- Full line under section titles
+- Compact spacing for more content
+- Pipe separator between connections
+- Footer disabled by default
+
+```yaml
+design:
+  theme: engineeringresumes
+```
+
+<Accordion title="View engineeringresumes theme defaults">
+```yaml
+page:
+  size: us-letter
+  top_margin: 0.7in
+  bottom_margin: 0.7in
+  left_margin: 0.7in
+  right_margin: 0.7in
+  show_footer: false
+
+colors:
+  body: rgb(0, 0, 0)
+  name: rgb(0, 0, 0)
+  section_titles: rgb(0, 0, 0)
+
+typography:
+  font_family:
+    body: XCharter
+    name: XCharter
+  font_size:
+    name: 25pt
+    body: 10pt
+    section_titles: 1.2em
+  bold:
+    name: false
+    section_titles: true
+
+links:
+  underline: true
+
+header:
+  alignment: center
+  connections:
+    show_icons: false
+    display_urls_instead_of_usernames: true
+    separator: '|'
+
+section_titles:
+  type: with_full_line
+
+sections:
+  space_between_regular_entries: 0.42cm
+  space_between_text_based_entries: 0.15cm
+
+entries:
+  side_space: 0cm
+  summary:
+    space_above: 0.08cm
+  highlights:
+    bullet: ●
+    space_above: 0.08cm
+    space_between_items: 0.08cm
+```
+</Accordion>
+
+### engineeringclassic Theme
+
+Classic style tailored for engineering CVs with left-aligned header.
+
+**Key characteristics:**
+- Left-aligned header
+- Raleway font family
+- Blue accent colors `rgb(0, 79, 144)`
+- Full line under section titles
+- Icons shown in connections
+- Balanced spacing
+
+```yaml
+design:
+  theme: engineeringclassic
+```
+
+<Accordion title="View engineeringclassic theme defaults">
+```yaml
+page:
+  size: us-letter
+  top_margin: 0.7in
+  bottom_margin: 0.7in
+  left_margin: 0.7in
+  right_margin: 0.7in
+
+colors:
+  body: rgb(0, 0, 0)
+  name: rgb(0, 79, 144)
+  headline: rgb(0, 79, 144)
+  connections: rgb(0, 79, 144)
+  section_titles: rgb(0, 79, 144)
+  links: rgb(0, 79, 144)
+
+typography:
+  font_family:
+    body: Raleway
+    name: Raleway
+  font_size:
+    name: 30pt
+    body: 10pt
+  bold:
+    name: false
+    section_titles: false
+
+links:
+  underline: false
+
+header:
+  alignment: left
+  connections:
+    show_icons: true
+
+section_titles:
+  type: with_full_line
+
+entries:
+  highlights:
+    bullet: •
+    space_above: 0.12cm
+    space_between_items: 0.12cm
+```
+</Accordion>
+
+## Choosing a Theme
+
+Consider these factors:
+
+<AccordionGroup>
+  <Accordion title="Industry & Role">
+    - **Academic/Research**: `classic` or `moderncv`
+    - **Engineering/Tech**: `engineeringresumes` or `sb2nov`
+    - **Corporate**: `classic` or `engineeringclassic`
+  </Accordion>
+
+  <Accordion title="Content Density">
+    - **More content**: `engineeringresumes` (tight spacing)
+    - **Balanced**: `classic`, `sb2nov`, `engineeringclassic`
+    - **Spacious**: `moderncv`
+  </Accordion>
+
+  <Accordion title="Visual Style">
+    - **Colorful accent**: `classic`, `engineeringclassic`, `moderncv`
+    - **Black & white**: `sb2nov`, `engineeringresumes`
+    - **Traditional**: `classic`, `moderncv`
+    - **Modern**: `sb2nov`, `engineeringresumes`
+  </Accordion>
+
+  <Accordion title="ATS Compatibility">
+    All themes are ATS-friendly, but these are particularly optimized:
+    - `sb2nov` (designed for ATS)
+    - `engineeringresumes` (clean structure)
+  </Accordion>
+</AccordionGroup>
+
+## Switching Themes
+
+To switch themes, simply change the theme name:
+
+```yaml
+design:
+  theme: moderncv  # Changed from classic
+```
+
+Your content stays the same. Only the visual styling changes.
+
+<Warning>
+  If you've customized design options, switching themes may not have visible effects for those specific options. Remove your customizations to see the new theme's defaults.
+</Warning>
+
+## Example: Same Content, Different Themes
+
+Here's the same CV rendered with different themes:
+
+<CodeGroup>
+```yaml Classic
+design:
+  theme: classic
+```
+
+```yaml ModernCV
+design:
+  theme: moderncv
+```
+
+```yaml SB2Nov
+design:
+  theme: sb2nov
+```
+
+```yaml Engineering Resumes
+design:
+  theme: engineeringresumes
+```
+
+```yaml Engineering Classic
+design:
+  theme: engineeringclassic
+```
+</CodeGroup>
+
+The content is identical—only the visual presentation differs.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Customize Design" icon="sliders" href="/guides/design-customization">
+    Override theme defaults with custom colors and fonts
+  </Card>
+  <Card title="YAML Structure" icon="code" href="/guides/yaml-structure">
+    Learn the complete YAML file structure
+  </Card>
+  <Card title="Examples" icon="folder" href="/examples">
+    View complete CV examples
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/reference/cli">
+    Render your CV with the CLI
+  </Card>
+</CardGroup>

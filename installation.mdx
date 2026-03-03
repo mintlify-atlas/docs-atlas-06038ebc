@@ -1,0 +1,109 @@
+---
+title: Installation
+description: Install RenderCV using pip, pipx, uv, or Docker. Requires Python 3.12 or newer.
+---
+
+RenderCV requires Python 3.12 or newer. Choose your preferred installation method below.
+
+## Install Python
+
+If you don't have Python installed, download and install Python 3.12 or newer from [python.org](https://www.python.org/downloads/).
+
+To verify your Python version, run:
+
+```bash
+python --version
+```
+
+## Install RenderCV
+
+<CodeGroup>
+
+```bash pip
+pip install "rendercv[full]"
+```
+
+```bash pipx
+pipx install "rendercv[full]"
+```
+
+```bash uv
+uv tool install "rendercv[full]"
+```
+
+```bash Docker
+docker pull ghcr.io/rendercv/rendercv
+```
+
+</CodeGroup>
+
+<Note>
+The `[full]` extra installs all optional dependencies including the CLI, file watcher, Typst renderer, and fonts. This is the recommended installation method for most users.
+</Note>
+
+## Installation methods explained
+
+### pip
+
+The standard Python package installer. Use this if you're already familiar with Python and pip.
+
+```bash
+pip install "rendercv[full]"
+```
+
+After installation, the `rendercv` command will be available in your terminal.
+
+### pipx
+
+[pipx](https://pipx.pypa.io/) installs Python applications in isolated environments. This is recommended if you want to avoid dependency conflicts with other Python packages.
+
+```bash
+pipx install "rendercv[full]"
+```
+
+### uv
+
+[uv](https://docs.astral.sh/uv/) is a fast Python package installer and resolver. Use this if you want the fastest installation experience.
+
+```bash
+uv tool install "rendercv[full]"
+```
+
+### Docker
+
+The Docker image is available at [ghcr.io/rendercv/rendercv](https://github.com/rendercv/rendercv/pkgs/container/rendercv). Use this if you prefer containerized environments or don't want to install Python.
+
+```bash
+docker pull ghcr.io/rendercv/rendercv
+```
+
+To use RenderCV with Docker, run commands like this:
+
+```bash
+docker run -v "$PWD":/work -w /work ghcr.io/rendercv/rendercv new "Your Name"
+```
+
+This mounts your current directory into the container so RenderCV can read and write files.
+
+## Verify installation
+
+Verify that RenderCV is installed correctly by running:
+
+```bash
+rendercv --version
+```
+
+You should see the version number printed to the terminal.
+
+<Tip>
+For Docker, verify the installation with:
+```bash
+docker run ghcr.io/rendercv/rendercv --version
+```
+</Tip>
+
+## Next steps
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Create and render your first CV in minutes.
+</Card>

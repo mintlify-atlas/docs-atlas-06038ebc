@@ -1,0 +1,125 @@
+---
+title: Set Up VS Code for RenderCV
+description: Configure Visual Studio Code for live preview with auto-save, YAML validation, and PDF viewing to streamline your CV editing workflow
+---
+
+Visual Studio Code can be configured to provide a live preview environment for writing your CV with RenderCV. This setup enables you to see your changes reflected in the PDF instantly as you type, making the CV editing process smooth and interactive.
+
+## Required Extensions
+
+<Steps>
+  <Step title="Install YAML Extension">
+    Install the [YAML Extension by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) from the VS Code marketplace.
+
+    This extension provides YAML language support with autocompletion and validation based on the JSON Schema.
+  </Step>
+
+  <Step title="Install PDF Viewer">
+    Install [PDFMore by wytheglobal](https://marketplace.visualstudio.com/items?itemName=wytheglobal.pdfmore) to view PDF files directly within VS Code.
+
+    This allows you to preview your rendered CV without leaving the editor.
+  </Step>
+</Steps>
+
+## Configure Auto-Save
+
+To enable automatic rendering as you type, configure VS Code to auto-save your files:
+
+<Steps>
+  <Step title="Open Settings JSON">
+    <Tabs>
+      <Tab title="macOS">
+        Press `Cmd+Shift+P` to open the Command Palette, then type:
+        ```
+        Preferences: Open User Settings (JSON)
+        ```
+      </Tab>
+      <Tab title="Windows/Linux">
+        Press `Ctrl+Shift+P` to open the Command Palette, then type:
+        ```
+        Preferences: Open User Settings (JSON)
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Add Auto-Save Configuration">
+    Add these lines to your `settings.json` file:
+
+    ```json
+    {
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 10
+    }
+    ```
+
+    These settings automatically save your YAML file 10 milliseconds after you stop typing.
+  </Step>
+</Steps>
+
+## Start Live Preview
+
+Once the extensions are installed and auto-save is configured:
+
+<Steps>
+  <Step title="Open Your YAML File">
+    Open your YAML input file (e.g., `John_Doe_CV.yaml`) in VS Code.
+  </Step>
+
+  <Step title="Run RenderCV in Watch Mode">
+    In the terminal, run:
+
+    ```bash
+    rendercv render --watch John_Doe_CV.yaml
+    ```
+
+    The `--watch` flag tells RenderCV to monitor the YAML file for changes and automatically re-render the PDF whenever the file is saved.
+
+    <Tip>
+      Keep this terminal window open while editing. You'll see rendering status messages each time the file is saved.
+    </Tip>
+  </Step>
+
+  <Step title="Arrange Your Workspace">
+    - Place your YAML file on the left side of the editor
+    - Open the generated PDF (from `rendercv_output/`) on the right side
+
+    <Tip>
+      Split your editor vertically by right-clicking on the PDF file tab and selecting "Split Right", or use the keyboard shortcut:
+      - macOS: `Cmd+\`
+      - Windows/Linux: `Ctrl+\`
+    </Tip>
+  </Step>
+
+  <Step title="Start Editing">
+    Make changes to the YAML file. They will be automatically saved, triggering RenderCV to regenerate the PDF. The PDF viewer will update to show your changes in real-time.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+If the live preview isn't working:
+
+<AccordionGroup>
+  <Accordion title="Auto-save not triggering">
+    - Verify auto-save is enabled in settings: `"files.autoSave": "afterDelay"`
+    - Check the auto-save delay is set: `"files.autoSaveDelay": 10`
+    - Look for the "Auto Save" indicator in VS Code's status bar
+  </Accordion>
+
+  <Accordion title="RenderCV not re-rendering">
+    - Ensure `rendercv render --watch` is running without errors in the terminal
+    - Check for YAML syntax errors in the terminal output
+    - Verify the file path in the watch command matches your YAML file name
+  </Accordion>
+
+  <Accordion title="PDF not updating">
+    - Try closing and reopening the PDF file in VS Code
+    - Check that the PDF file exists in the `rendercv_output/` folder
+    - Refresh the PDF viewer by clicking on it and pressing `Cmd+R` (macOS) or `Ctrl+R` (Windows/Linux)
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  With this setup, you'll have a productive environment for creating and refining your CV with instant visual feedback.
+</Note>

@@ -1,0 +1,657 @@
+---
+title: Design Customization
+description: Learn how to customize colors, typography, spacing, and layout in RenderCV to create your perfect CV design.
+---
+
+RenderCV gives you complete control over your CV's visual appearance. You can customize colors, fonts, spacing, page layout, and more.
+
+## Customization Approach
+
+Start with a theme and override only what you want to change:
+
+```yaml
+design:
+  theme: classic  # Start with a theme
+  colors:
+    name: rgb(255, 0, 0)  # Override specific values
+```
+
+Or specify everything for complete control:
+
+```yaml
+design:
+  theme: classic
+  page:
+    size: a4
+    top_margin: 1in
+  colors:
+    # ... all color options
+  typography:
+    # ... all typography options
+  # ... etc.
+```
+
+## Colors
+
+Customize colors for all CV elements:
+
+```yaml
+design:
+  theme: classic
+  colors:
+    body: rgb(0, 0, 0)              # Main body text
+    name: rgb(0, 79, 144)            # Your name in header
+    headline: rgb(0, 79, 144)        # Headline text
+    connections: rgb(0, 79, 144)     # Email, phone, links
+    section_titles: rgb(0, 79, 144)  # Section headings
+    links: rgb(0, 79, 144)           # Hyperlinks
+    footer: rgb(128, 128, 128)       # Footer text
+    top_note: rgb(128, 128, 128)     # Top note text
+```
+
+### Color Formats
+
+RenderCV supports multiple color formats:
+
+<Tabs>
+  <Tab title="RGB">
+    ```yaml
+    colors:
+      name: rgb(0, 79, 144)
+      section_titles: rgb(255, 0, 0)
+    ```
+  </Tab>
+
+  <Tab title="Hex">
+    ```yaml
+    colors:
+      name: "#004F90"
+      section_titles: "#FF0000"
+    ```
+  </Tab>
+
+  <Tab title="CMYK">
+    ```yaml
+    colors:
+      name: cmyk(100%, 45%, 0%, 44%)
+    ```
+  </Tab>
+
+  <Tab title="Named Colors">
+    ```yaml
+    colors:
+      name: navy
+      section_titles: crimson
+    ```
+  </Tab>
+</Tabs>
+
+### Color Scheme Examples
+
+<AccordionGroup>
+  <Accordion title="Professional Blue">
+    ```yaml
+    colors:
+      body: rgb(0, 0, 0)
+      name: rgb(0, 79, 144)
+      headline: rgb(0, 79, 144)
+      connections: rgb(0, 79, 144)
+      section_titles: rgb(0, 79, 144)
+      links: rgb(0, 79, 144)
+    ```
+  </Accordion>
+
+  <Accordion title="Modern Purple">
+    ```yaml
+    colors:
+      body: rgb(0, 0, 0)
+      name: rgb(88, 28, 135)      # Purple
+      headline: rgb(88, 28, 135)
+      connections: rgb(88, 28, 135)
+      section_titles: rgb(88, 28, 135)
+      links: rgb(88, 28, 135)
+    ```
+  </Accordion>
+
+  <Accordion title="Classic Black & White">
+    ```yaml
+    colors:
+      body: rgb(0, 0, 0)
+      name: rgb(0, 0, 0)
+      headline: rgb(0, 0, 0)
+      connections: rgb(0, 0, 0)
+      section_titles: rgb(0, 0, 0)
+      links: rgb(0, 0, 0)
+    ```
+  </Accordion>
+
+  <Accordion title="Tech Green">
+    ```yaml
+    colors:
+      body: rgb(0, 0, 0)
+      name: rgb(22, 163, 74)      # Green
+      headline: rgb(22, 163, 74)
+      connections: rgb(22, 163, 74)
+      section_titles: rgb(22, 163, 74)
+      links: rgb(22, 163, 74)
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Typography
+
+### Font Family
+
+Set fonts for different elements:
+
+```yaml
+design:
+  typography:
+    font_family:
+      body: Source Sans 3
+      name: Source Sans 3
+      headline: Source Sans 3
+      connections: Source Sans 3
+      section_titles: Source Sans 3
+```
+
+**Shorthand:** Apply one font everywhere:
+
+```yaml
+design:
+  typography:
+    font_family: Source Sans 3
+```
+
+#### Available Built-in Fonts
+
+RenderCV includes these fonts:
+
+<Tabs>
+  <Tab title="Sans Serif">
+    - Source Sans 3
+    - Raleway
+    - Roboto
+    - Lato
+  </Tab>
+
+  <Tab title="Serif">
+    - Latin Modern Roman
+    - Charter
+    - XCharter
+    - Libertinus Serif
+  </Tab>
+
+  <Tab title="Mono">
+    - Latin Modern Mono
+    - Fira Code
+  </Tab>
+
+  <Tab title="Special">
+    - Fontin (ModernCV style)
+    - New Computer Modern
+  </Tab>
+</Tabs>
+
+<Note>
+  You can also use any system font or add custom fonts. See [Custom Fonts](/how-to/custom-fonts) for details.
+</Note>
+
+### Font Size
+
+```yaml
+design:
+  typography:
+    font_size:
+      body: 10pt
+      name: 30pt
+      headline: 10pt
+      connections: 10pt
+      section_titles: 1.4em
+```
+
+Units supported: `pt`, `em`, `cm`, `in`
+
+### Font Styling
+
+Control bold and small caps:
+
+```yaml
+design:
+  typography:
+    bold:
+      name: true              # Bold name
+      headline: false
+      connections: false
+      section_titles: true    # Bold section titles
+    
+    small_caps:
+      name: false
+      headline: false
+      connections: false
+      section_titles: false
+```
+
+### Text Alignment
+
+```yaml
+design:
+  typography:
+    alignment: justified                          # Body text alignment
+    date_and_location_column_alignment: right     # Right column alignment
+    line_spacing: 0.6em                          # Space between lines
+```
+
+**Alignment options:**
+- `justified`: Spreads text across full width
+- `justified-with-no-hyphenation`: Full width, no word breaks
+- `left`: Left-aligned
+- `center`: Centered
+- `right`: Right-aligned
+
+## Page Settings
+
+Configure page size and margins:
+
+```yaml
+design:
+  page:
+    size: us-letter
+    top_margin: 0.7in
+    bottom_margin: 0.7in
+    left_margin: 0.7in
+    right_margin: 0.7in
+    show_footer: true
+    show_top_note: true
+```
+
+### Page Sizes
+
+<Tabs>
+  <Tab title="US Letter">
+    ```yaml
+    page:
+      size: us-letter  # 8.5" x 11"
+    ```
+  </Tab>
+
+  <Tab title="A4">
+    ```yaml
+    page:
+      size: a4  # 210mm x 297mm
+    ```
+  </Tab>
+
+  <Tab title="Custom">
+    ```yaml
+    page:
+      size: 8in 10in
+    ```
+  </Tab>
+</Tabs>
+
+### Margin Strategies
+
+<AccordionGroup>
+  <Accordion title="Standard (Recommended)">
+    ```yaml
+    page:
+      top_margin: 0.7in
+      bottom_margin: 0.7in
+      left_margin: 0.7in
+      right_margin: 0.7in
+    ```
+    Balanced, professional appearance.
+  </Accordion>
+
+  <Accordion title="Narrow (More Content)">
+    ```yaml
+    page:
+      top_margin: 0.5in
+      bottom_margin: 0.5in
+      left_margin: 0.5in
+      right_margin: 0.5in
+    ```
+    Fits more content, but can feel cramped.
+  </Accordion>
+
+  <Accordion title="Wide (Spacious)">
+    ```yaml
+    page:
+      top_margin: 1in
+      bottom_margin: 1in
+      left_margin: 1in
+      right_margin: 1in
+    ```
+    Elegant, but uses more pages.
+  </Accordion>
+</AccordionGroup>
+
+## Header
+
+Customize the header layout:
+
+```yaml
+design:
+  header:
+    alignment: center                  # left, center, or right
+    photo_width: 3.5cm
+    photo_position: left               # left or right
+    photo_space_left: 0.4cm
+    photo_space_right: 0.4cm
+    space_below_name: 0.7cm
+    space_below_headline: 0.7cm
+    space_below_connections: 0.7cm
+```
+
+### Connection Display
+
+```yaml
+design:
+  header:
+    connections:
+      phone_number_format: national    # national, international, or E164
+      hyperlink: true                  # Make connections clickable
+      show_icons: true                 # Show Font Awesome icons
+      display_urls_instead_of_usernames: false
+      separator: ''                    # Or: '|', '•', etc.
+      space_between_connections: 0.5cm
+```
+
+<Tabs>
+  <Tab title="With Icons">
+    ```yaml
+    connections:
+      show_icons: true
+      separator: ''
+    ```
+    Displays: 📧 john@example.com 📱 (555) 123-4567
+  </Tab>
+
+  <Tab title="With Separator">
+    ```yaml
+    connections:
+      show_icons: false
+      separator: '|'
+    ```
+    Displays: john@example.com | (555) 123-4567
+  </Tab>
+
+  <Tab title="URLs Shown">
+    ```yaml
+    connections:
+      display_urls_instead_of_usernames: true
+    ```
+    Displays: github.com/username instead of username
+  </Tab>
+</Tabs>
+
+## Section Titles
+
+Customize section heading styles:
+
+```yaml
+design:
+  section_titles:
+    type: with_partial_line   # Style type
+    line_thickness: 0.5pt
+    space_above: 0.5cm
+    space_below: 0.3cm
+```
+
+### Section Title Types
+
+<Tabs>
+  <Tab title="with_partial_line">
+    ```yaml
+    section_titles:
+      type: with_partial_line
+    ```
+    Section title with line extending to the right.
+  </Tab>
+
+  <Tab title="with_full_line">
+    ```yaml
+    section_titles:
+      type: with_full_line
+    ```
+    Line spans the entire page width.
+  </Tab>
+
+  <Tab title="without_line">
+    ```yaml
+    section_titles:
+      type: without_line
+    ```
+    Just the title text, no line.
+  </Tab>
+
+  <Tab title="moderncv">
+    ```yaml
+    section_titles:
+      type: moderncv
+      line_thickness: 0.15cm
+    ```
+    Thick colored line (ModernCV style).
+  </Tab>
+</Tabs>
+
+## Entries
+
+Fine-tune entry spacing and layout:
+
+```yaml
+design:
+  entries:
+    date_and_location_width: 4.15cm
+    side_space: 0.2cm
+    space_between_columns: 0.1cm
+    allow_page_break: false
+    short_second_row: true
+    degree_width: 1cm
+```
+
+### Highlights (Bullet Points)
+
+```yaml
+design:
+  entries:
+    highlights:
+      bullet: •                           # Bullet character
+      nested_bullet: •                    # For nested bullets
+      space_left: 0.15cm
+      space_above: 0cm
+      space_between_items: 0cm
+      space_between_bullet_and_text: 0.5em
+```
+
+**Popular bullet styles:**
+- `•` (default)
+- `●` (filled circle)
+- `◦` (hollow circle)
+- `-` (dash)
+- `▸` (triangle)
+
+### Summary Text
+
+```yaml
+design:
+  entries:
+    summary:
+      space_above: 0cm
+      space_left: 0cm
+```
+
+## Sections
+
+Control section-level spacing:
+
+```yaml
+design:
+  sections:
+    allow_page_break: true
+    space_between_regular_entries: 1.2em
+    space_between_text_based_entries: 0.3em
+    show_time_spans_in:
+      - experience
+```
+
+<Note>
+  `show_time_spans_in` displays duration calculations like "2 years 3 months" for entries in the specified sections.
+</Note>
+
+## Links
+
+Customize hyperlink appearance:
+
+```yaml
+design:
+  links:
+    underline: false
+    show_external_link_icon: false
+```
+
+## Templates
+
+For advanced customization, you can modify how entries are rendered:
+
+```yaml
+design:
+  templates:
+    footer: '*NAME -- PAGE_NUMBER/TOTAL_PAGES*'
+    top_note: '*LAST_UPDATED CURRENT_DATE*'
+    single_date: MONTH_ABBREVIATION YEAR
+    date_range: START_DATE – END_DATE
+    time_span: HOW_MANY_YEARS YEARS HOW_MANY_MONTHS MONTHS
+```
+
+### Entry Templates
+
+```yaml
+design:
+  templates:
+    experience_entry:
+      main_column: |-
+        **COMPANY**, POSITION
+        SUMMARY
+        HIGHLIGHTS
+      date_and_location_column: |-
+        LOCATION
+        DATE
+    
+    education_entry:
+      main_column: |-
+        **INSTITUTION**, AREA
+        SUMMARY
+        HIGHLIGHTS
+      degree_column: '**DEGREE**'
+      date_and_location_column: |-
+        LOCATION
+        DATE
+```
+
+**Available placeholders:** `NAME`, `COMPANY`, `POSITION`, `LOCATION`, `DATE`, `HIGHLIGHTS`, `SUMMARY`, `INSTITUTION`, `DEGREE`, `AREA`, and more.
+
+## Complete Customization Example
+
+Here's a fully customized design:
+
+```yaml
+design:
+  theme: classic
+  
+  page:
+    size: us-letter
+    top_margin: 0.8in
+    bottom_margin: 0.8in
+    left_margin: 0.8in
+    right_margin: 0.8in
+  
+  colors:
+    body: rgb(0, 0, 0)
+    name: rgb(88, 28, 135)       # Purple
+    headline: rgb(88, 28, 135)
+    connections: rgb(88, 28, 135)
+    section_titles: rgb(88, 28, 135)
+    links: rgb(88, 28, 135)
+  
+  typography:
+    font_family: Raleway
+    font_size:
+      body: 10.5pt
+      name: 32pt
+      section_titles: 1.5em
+    bold:
+      name: true
+      section_titles: true
+    alignment: justified
+    line_spacing: 0.65em
+  
+  header:
+    alignment: center
+    space_below_name: 0.8cm
+    connections:
+      show_icons: true
+      separator: ''
+  
+  section_titles:
+    type: with_partial_line
+    line_thickness: 0.6pt
+    space_above: 0.6cm
+    space_below: 0.4cm
+  
+  entries:
+    highlights:
+      bullet: ▸
+      space_between_bullet_and_text: 0.4em
+  
+  sections:
+    space_between_regular_entries: 1.3em
+    show_time_spans_in:
+      - experience
+```
+
+## Tips for Great Design
+
+<AccordionGroup>
+  <Accordion title="Consistency is Key">
+    - Use the same color for all accent elements (name, section titles, links)
+    - Stick to 1-2 font families maximum
+    - Keep spacing values consistent
+  </Accordion>
+
+  <Accordion title="Readability First">
+    - Body text should be 10-11pt
+    - Line spacing of 0.6-0.7em works well
+    - Ensure sufficient contrast between text and background
+  </Accordion>
+
+  <Accordion title="Professional Appearance">
+    - Avoid bright, saturated colors
+    - Use standard margins (0.7-1in)
+    - Don't over-customize—sometimes less is more
+  </Accordion>
+
+  <Accordion title="Test Your Design">
+    - Print or export to PDF and review carefully
+    - Check that all text is readable
+    - Verify that important content fits on one page
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Themes" icon="palette" href="/guides/themes">
+    Start with a professionally designed theme
+  </Card>
+  <Card title="Custom Fonts" icon="font" href="/how-to/custom-fonts">
+    Add your own fonts to RenderCV
+  </Card>
+  <Card title="YAML Structure" icon="code" href="/guides/yaml-structure">
+    Learn about all YAML configuration options
+  </Card>
+  <Card title="Examples" icon="folder" href="/examples">
+    View complete CV examples with customizations
+  </Card>
+</CardGroup>

@@ -1,0 +1,522 @@
+---
+title: Use Arbitrary Keys in Entries
+description: Add custom fields to CV entries and display them using design.templates for complete control over entry content
+---
+
+The `design.templates` field controls how entry data is displayed. You can add any custom field to your entries and reference it in templates using UPPERCASE placeholders.
+
+## How It Works
+
+Templates use **UPPERCASE PLACEHOLDERS** that map to entry keys. Any key you add to an entry becomes available as an uppercase placeholder in templates.
+
+<Steps>
+  <Step title="Add custom keys to your entry">
+    In your YAML file, add any fields you want to an entry:
+
+    ```yaml
+    cv:
+      sections:
+        - title: Experience
+          entries:
+            - company: Google
+              position: Software Engineer
+              start_date: 2022-01
+              end_date: present
+              location: Mountain View, CA
+              tech_stack: Python, Go, Kubernetes  # Custom field
+              team_size: 12                       # Custom field
+              highlights:
+                - Led migration of legacy systems
+                - Improved performance by 40%
+    ```
+  </Step>
+
+  <Step title="Reference custom keys in templates">
+    Use the custom keys as UPPERCASE placeholders in your `design.templates`:
+
+    ```yaml
+    design:
+      templates:
+        experience_entry:
+          main_column: |-
+            **COMPANY**, POSITION
+            *Location:* LOCATION | *Team size:* TEAM_SIZE
+            *Tech stack:* TECH_STACK
+            HIGHLIGHTS
+    ```
+  </Step>
+
+  <Step title="Render your CV">
+    ```bash
+    rendercv render Your_Name_CV.yaml
+    ```
+
+    The output will show:
+    ```
+    Google, Software Engineer
+    Location: Mountain View, CA | Team size: 12
+    Tech stack: Python, Go, Kubernetes
+    • Led migration of legacy systems
+    • Improved performance by 40%
+    ```
+  </Step>
+</Steps>
+
+## Built-in Keys
+
+Each entry type has built-in keys that are always available:
+
+<Tabs>
+  <Tab title="ExperienceEntry">
+    ```yaml
+    - company: Google
+      position: Software Engineer
+      location: Mountain View, CA
+      start_date: 2022-01
+      end_date: present
+      summary: Brief description
+      highlights:
+        - Achievement 1
+        - Achievement 2
+    ```
+
+    **Available placeholders:**
+    - `COMPANY`
+    - `POSITION`
+    - `LOCATION`
+    - `START_DATE`
+    - `END_DATE`
+    - `DATE`
+    - `TIME_SPAN`
+    - `SUMMARY`
+    - `HIGHLIGHTS`
+  </Tab>
+
+  <Tab title="EducationEntry">
+    ```yaml
+    - institution: MIT
+      area: Computer Science
+      degree: BS
+      location: Cambridge, MA
+      start_date: 2018-09
+      end_date: 2022-05
+      gpa: 3.9/4.0
+      summary: Brief description
+      highlights:
+        - Dean's List all semesters
+        - Graduated summa cum laude
+    ```
+
+    **Available placeholders:**
+    - `INSTITUTION`
+    - `AREA`
+    - `DEGREE`
+    - `LOCATION`
+    - `START_DATE`
+    - `END_DATE`
+    - `DATE`
+    - `TIME_SPAN`
+    - `GPA`
+    - `SUMMARY`
+    - `HIGHLIGHTS`
+  </Tab>
+
+  <Tab title="NormalEntry">
+    ```yaml
+    - name: Project Name
+      location: Remote
+      start_date: 2023-01
+      end_date: present
+      summary: Brief description
+      highlights:
+        - Feature 1
+        - Feature 2
+    ```
+
+    **Available placeholders:**
+    - `NAME`
+    - `LOCATION`
+    - `START_DATE`
+    - `END_DATE`
+    - `DATE`
+    - `TIME_SPAN`
+    - `SUMMARY`
+    - `HIGHLIGHTS`
+  </Tab>
+
+  <Tab title="OneLineEntry">
+    ```yaml
+    - label: Programming Languages
+      details: Python, Go, JavaScript, TypeScript
+    ```
+
+    **Available placeholders:**
+    - `LABEL`
+    - `DETAILS`
+  </Tab>
+
+  <Tab title="PublicationEntry">
+    ```yaml
+    - title: Paper Title
+      authors:
+        - John Doe
+        - Jane Smith
+      journal: Nature
+      doi: 10.1000/journal.123
+      date: 2023-05
+    ```
+
+    **Available placeholders:**
+    - `TITLE`
+    - `AUTHORS`
+    - `JOURNAL`
+    - `DOI`
+    - `DATE`
+  </Tab>
+
+  <Tab title="BulletEntry">
+    ```yaml
+    - bullet: First bullet point
+    - bullet: Second bullet point
+    ```
+
+    **Available placeholders:**
+    - `BULLET`
+  </Tab>
+</Tabs>
+
+## Custom Fields Examples
+
+### Example 1: Technology Stack
+
+<CodeGroup>
+```yaml YAML Input
+cv:
+  sections:
+    - title: Experience
+      entries:
+        - company: Google
+          position: Software Engineer
+          start_date: 2022-01
+          end_date: present
+          location: Mountain View, CA
+          tech_stack: Python, Go, Kubernetes
+          highlights:
+            - Led migration project
+
+design:
+  templates:
+    experience_entry:
+      main_column: |-
+        **COMPANY**, POSITION
+        *Tech stack:* TECH_STACK
+        HIGHLIGHTS
+      date_and_location_column: |-
+        LOCATION
+        DATE
+```
+
+```markdown Output
+Google, Software Engineer
+Tech stack: Python, Go, Kubernetes
+• Led migration project
+```
+</CodeGroup>
+
+### Example 2: Project Links
+
+<CodeGroup>
+```yaml YAML Input
+cv:
+  sections:
+    - title: Projects
+      entries:
+        - name: RenderCV
+          start_date: 2023-01
+          end_date: present
+          github: https://github.com/sinaatalay/rendercv
+          website: https://rendercv.com
+          highlights:
+            - Generate CVs from YAML
+            - Support for multiple themes
+
+design:
+  templates:
+    normal_entry:
+      main_column: |-
+        **NAME**
+        [GitHub](GITHUB) | [Website](WEBSITE)
+        HIGHLIGHTS
+      date_and_location_column: |-
+        DATE
+```
+
+```markdown Output
+RenderCV
+GitHub | Website
+• Generate CVs from YAML
+• Support for multiple themes
+```
+</CodeGroup>
+
+### Example 3: Course Details
+
+<CodeGroup>
+```yaml YAML Input
+cv:
+  sections:
+    - title: Education
+      entries:
+        - institution: MIT
+          area: Computer Science
+          degree: BS
+          start_date: 2018-09
+          end_date: 2022-05
+          gpa: 3.9/4.0
+          relevant_courses:
+            - Algorithms
+            - Machine Learning
+            - Computer Networks
+          highlights:
+            - Dean's List all semesters
+
+design:
+  templates:
+    education_entry:
+      main_column: |-
+        **INSTITUTION**, AREA
+        *GPA:* GPA | *Relevant courses:* RELEVANT_COURSES
+        HIGHLIGHTS
+      degree_column: '**DEGREE**'
+      date_and_location_column: |-
+        DATE
+```
+
+```markdown Output
+MIT, Computer Science
+GPA: 3.9/4.0 | Relevant courses: Algorithms, Machine Learning, Computer Networks
+• Dean's List all semesters
+```
+</CodeGroup>
+
+### Example 4: Contact Information
+
+<CodeGroup>
+```yaml YAML Input
+cv:
+  sections:
+    - title: References
+      entries:
+        - label: Dr. Jane Smith
+          details: Professor of Computer Science
+          email: jane.smith@university.edu
+          phone: +1-555-123-4567
+
+design:
+  templates:
+    one_line_entry:
+      main_column: |-
+        **LABEL:** DETAILS
+        Email: EMAIL | Phone: PHONE
+```
+
+```markdown Output
+Dr. Jane Smith: Professor of Computer Science
+Email: jane.smith@university.edu | Phone: +1-555-123-4567
+```
+</CodeGroup>
+
+## Special Formatting
+
+### Lists as Strings
+
+If you add a list as a custom field, RenderCV converts it to a comma-separated string:
+
+```yaml
+- name: Project
+  technologies:
+    - Python
+    - Docker
+    - Kubernetes
+```
+
+In templates, `TECHNOLOGIES` becomes: `Python, Docker, Kubernetes`
+
+### Nested Fields
+
+For complex structures, you may need to flatten them:
+
+```yaml
+- company: Google
+  manager:
+    name: John Doe
+    title: Senior Manager
+```
+
+Instead, use:
+```yaml
+- company: Google
+  manager_name: John Doe
+  manager_title: Senior Manager
+```
+
+Then reference as `MANAGER_NAME` and `MANAGER_TITLE` in templates.
+
+## Template Syntax
+
+Templates support:
+
+- **Bold:** `**TEXT**` or `PLACEHOLDER`
+- **Italic:** `*TEXT*` or `*PLACEHOLDER*`
+- **Links:** `[Text](URL)` or `[Text](PLACEHOLDER_URL)`
+- **Code:** `` `TEXT` `` or `` `PLACEHOLDER` ``
+- **Linebreaks:** Use `|-` for multi-line strings in YAML
+
+<Warning>
+  Placeholders are **case-sensitive**. Always use UPPERCASE for entry keys:
+  - ✅ `TECH_STACK`
+  - ❌ `tech_stack`
+  - ❌ `Tech_Stack`
+</Warning>
+
+## Tips
+
+<CardGroup cols={2}>
+  <Card title="Use Descriptive Names" icon="tag">
+    Choose clear key names like `tech_stack` instead of `ts` or `stack`. This makes your YAML more readable.
+  </Card>
+  <Card title="Keep It Simple" icon="lightbulb">
+    Don't add too many custom fields. Focus on the most important information for each entry.
+  </Card>
+  <Card title="Be Consistent" icon="check">
+    Use the same custom keys across similar entries. This ensures consistent formatting.
+  </Card>
+  <Card title="Test Changes" icon="flask">
+    Use `rendercv render --watch` to see how custom fields appear in the rendered CV.
+  </Card>
+</CardGroup>
+
+## Advanced: Conditional Display
+
+You can conditionally show fields based on whether they exist. This requires [overriding templates](/how-to/override-templates):
+
+```typst entries/ExperienceEntry.j2.typ
+#regular-entry(
+  [
+    *{{ entry.company }}*, {{ entry.position }}
+    
+    {% if entry.tech_stack is defined %}
+    _Tech stack:_ {{ entry.tech_stack }}
+    {% endif %}
+    
+    {% if entry.team_size is defined %}
+    _Team size:_ {{ entry.team_size }}
+    {% endif %}
+  ],
+  [
+    {{ entry.location }}
+    {{ entry.date }}
+  ],
+)
+```
+
+This only shows `tech_stack` and `team_size` if they're present in the entry.
+
+## Common Use Cases
+
+<AccordionGroup>
+  <Accordion title="Adding project links (GitHub, demo, etc.)">
+    ```yaml
+    - name: Project Name
+      github: https://github.com/user/repo
+      demo: https://demo.example.com
+      highlights:
+        - Feature 1
+
+    # Template
+    design:
+      templates:
+        normal_entry:
+          main_column: |-
+            **NAME**
+            [GitHub](GITHUB) | [Demo](DEMO)
+            HIGHLIGHTS
+    ```
+  </Accordion>
+
+  <Accordion title="Adding certifications with credential IDs">
+    ```yaml
+    - label: AWS Certified Solutions Architect
+      details: Amazon Web Services
+      credential_id: ABC-123-XYZ
+      date: 2023-05
+
+    # Template
+    design:
+      templates:
+        one_line_entry:
+          main_column: |-
+            **LABEL:** DETAILS (CREDENTIAL_ID)
+    ```
+  </Accordion>
+
+  <Accordion title="Adding salary/compensation ranges">
+    ```yaml
+    - company: Google
+      position: Software Engineer
+      compensation: $150k - $180k
+      start_date: 2022-01
+
+    # Template (only if you want to show it)
+    design:
+      templates:
+        experience_entry:
+          main_column: |-
+            **COMPANY**, POSITION
+            *Compensation:* COMPENSATION
+            HIGHLIGHTS
+    ```
+  </Accordion>
+
+  <Accordion title="Adding languages/frameworks for each role">
+    ```yaml
+    - company: Startup Inc
+      position: Full Stack Developer
+      languages: Python, JavaScript, Go
+      frameworks: Django, React, Gin
+
+    # Template
+    design:
+      templates:
+        experience_entry:
+          main_column: |-
+            **COMPANY**, POSITION
+            *Languages:* LANGUAGES | *Frameworks:* FRAMEWORKS
+            HIGHLIGHTS
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Limitations
+
+<Warning>
+  - Placeholders only work in `design.templates`, not in Typst template overrides
+  - Complex nested structures (objects, nested lists) are not supported
+  - Placeholders are replaced with their string representation
+</Warning>
+
+For more complex customizations, see [Override Default Templates](/how-to/override-templates).
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Design Templates" icon="file-lines" href="/guides/design-customization">
+    Complete reference for design.templates
+  </Card>
+  <Card title="Override Templates" icon="code" href="/how-to/override-templates">
+    Advanced template customization with Typst
+  </Card>
+  <Card title="Entry Types" icon="list" href="/entries/overview">
+    All built-in entry types and their fields
+  </Card>
+</CardGroup>

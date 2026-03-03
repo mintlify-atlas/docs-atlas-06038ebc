@@ -1,0 +1,240 @@
+---
+title: rendercv new
+description: Generate a sample CV YAML file to get started with RenderCV
+---
+
+The `rendercv new` command creates a sample CV file pre-filled with example data. This is the fastest way to get started with RenderCV.
+
+## Basic Usage
+
+```bash
+rendercv new "Your Full Name"
+```
+
+This creates a file named `Your_Full_Name_CV.yaml` in your current directory.
+
+<Tip>
+  The file name is automatically generated from your name by replacing spaces with underscores.
+</Tip>
+
+## Command Options
+
+<ParamField path="full_name" type="string" required>
+  Your full name, which will be used in the sample CV and for the filename
+
+  ```bash
+  rendercv new "John Doe"
+  ```
+
+  This creates `John_Doe_CV.yaml`
+</ParamField>
+
+<ParamField path="--theme" type="string" default="classic">
+  Choose a visual theme for your CV
+
+  ```bash
+  rendercv new "John Doe" --theme moderncv
+  ```
+
+  **Available themes:**
+  - `classic` - Clean and traditional design (default)
+  - `moderncv` - Modern style with color accents
+  - `sb2nov` - Compact two-column layout
+  - `engineeringresumes` - Optimized for technical roles
+
+  <Note>
+    You can change the theme later by editing the `design.theme` field in your YAML file.
+  </Note>
+</ParamField>
+
+<ParamField path="--locale" type="string" default="english">
+  Set the language for section headers and other text
+
+  ```bash
+  rendercv new "John Doe" --locale french
+  ```
+
+  **Available locales:**
+  - `english` - English (default)
+  - `french` - French
+  - `german` - German
+  - `italian` - Italian
+  - `spanish` - Spanish
+  - `turkish` - Turkish
+
+  <Tip>
+    You can create your own locale by adding a custom `locale_catalog` section to your YAML file. Start with English and then customize the translations.
+  </Tip>
+</ParamField>
+
+<ParamField path="--create-typst-templates" type="flag" default="false">
+  Generate editable Typst template files for advanced customization
+
+  ```bash
+  rendercv new "John Doe" --create-typst-templates
+  ```
+
+  This creates a folder named after your theme (e.g., `classic/`) containing:
+  - Template files for each CV section
+  - A main template file that controls the overall layout
+
+  <Warning>
+    Only use this if you want complete control over the CV design. Most users should skip this option and use the built-in themes.
+  </Warning>
+
+  See [Override Default Templates](/how-to/override-templates) for details.
+</ParamField>
+
+<ParamField path="--create-markdown-templates" type="flag" default="false">
+  Generate editable Markdown template files
+
+  ```bash
+  rendercv new "John Doe" --create-markdown-templates
+  ```
+
+  This creates a `markdown/` folder with template files that control how your CV is rendered to Markdown and HTML.
+</ParamField>
+
+## Examples
+
+<CodeGroup>
+```bash Basic
+rendercv new "Jane Smith"
+```
+
+```bash Custom Theme
+rendercv new "Jane Smith" --theme moderncv
+```
+
+```bash Different Language
+rendercv new "Jean Dupont" --locale french
+```
+
+```bash With Templates
+rendercv new "John Doe" --theme classic --create-typst-templates
+```
+
+```bash Everything
+rendercv new "Maria Garcia" --theme sb2nov --locale spanish --create-typst-templates
+```
+</CodeGroup>
+
+## What Gets Created
+
+After running `rendercv new`, you'll see output like this:
+
+```
+┌─ Get started ─────────────────────────────────────────┐
+│ ✓ Created your YAML input file: ./John_Doe_CV.yaml   │
+│                                                        │
+│ Next steps:                                            │
+│   1. Edit the YAML input file with your information   │
+│   2. Run: rendercv render John_Doe_CV.yaml            │
+└────────────────────────────────────────────────────────┘
+```
+
+### If the file already exists
+
+RenderCV won't overwrite your existing CV file:
+
+```
+┌─ Get started ─────────────────────────────────────────┐
+│ Your YAML input file already exists:                   │
+│ ./John_Doe_CV.yaml                                     │
+│                                                        │
+│ Next steps:                                            │
+│   1. Edit the YAML input file with your information   │
+│   2. Run: rendercv render John_Doe_CV.yaml            │
+└────────────────────────────────────────────────────────┘
+```
+
+<Note>
+  This prevents you from accidentally overwriting your CV. If you want a fresh start, delete or rename the existing file first.
+</Note>
+
+### If templates were created
+
+When using `--create-typst-templates` or `--create-markdown-templates`, you'll see additional output:
+
+```
+┌─ Get started ─────────────────────────────────────────┐
+│ ✓ Created your YAML input file: ./John_Doe_CV.yaml   │
+│                                                        │
+│ Next steps:                                            │
+│   1. Edit the YAML input file with your information   │
+│   2. Run: rendercv render John_Doe_CV.yaml            │
+│                                                        │
+│ Also created:                                          │
+│   ○ Typst templates: ./classic                        │
+│                                                        │
+│ Templates are for advanced design customization.      │
+│ You can ignore or delete them.                        │
+└────────────────────────────────────────────────────────┘
+```
+
+## Next Steps
+
+<Steps>
+  <Step title="Edit your CV">
+    Open the generated YAML file in your favorite text editor and replace the sample data with your information.
+  </Step>
+
+  <Step title="Render your CV">
+    Run `rendercv render Your_Name_CV.yaml` to generate PDF, HTML, and other outputs.
+
+    See the [render command documentation](/cli/render) for all available options.
+  </Step>
+
+  <Step title="Customize the design (optional)">
+    Modify the `design` section in your YAML file to change colors, fonts, spacing, and more.
+
+    Check out [Design Customization](/guides/design-customization) for details.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: Theme X is not available">
+    Make sure you're using one of the available themes: `classic`, `moderncv`, `sb2nov`, or `engineeringresumes`.
+
+    ```bash
+    # Correct
+    rendercv new "John Doe" --theme moderncv
+
+    # Wrong - "modern" is not a valid theme name
+    rendercv new "John Doe" --theme modern
+    ```
+  </Accordion>
+
+  <Accordion title="Error: Locale X is not available">
+    Check the list of available locales above. If your language isn't available, you can start with English and create a custom locale in your YAML file.
+
+    ```yaml
+    locale_catalog:
+      month: "Mois"
+      present: "Aujourd'hui"
+      to: "à"
+      # ... customize other translations
+    ```
+  </Accordion>
+
+  <Accordion title="The file was created but I can't find it">
+    The file is created in your current working directory. Check where you are:
+
+    ```bash
+    # On Unix/Mac/Linux
+    pwd
+
+    # On Windows
+    cd
+    ```
+
+    You can also specify a full path:
+
+    ```bash
+    cd ~/Documents/CVs
+    rendercv new "John Doe"
+    ```
+  </Accordion>
+</AccordionGroup>

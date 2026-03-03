@@ -1,0 +1,479 @@
+---
+title: "Templater"
+description: "Jinja2 templating system for generating Typst, Markdown, and HTML output from CV models"
+---
+
+## Overview
+
+The RenderCV templater uses [Jinja2](https://jinja.palletsprojects.com/) to transform validated CV models into formatted output. It provides:
+
+- **Template hierarchy** for user overrides
+- **Custom filters** for string processing
+- **Model preprocessing** for template-friendly data
+- **Multi-format support** (Typst, Markdown, HTML)
+
+## Jinja2 Environment
+
+The templater creates a cached Jinja2 environment with custom configuration.
+
+### get_jinja2_environment
+
+Create cached Jinja2 environment with loaders and filters.
+
+```python
+@functools.lru_cache(maxsize=1)
+def get_jinja2_environment(
+    input_file_path: pathlib.Path | None = None,
+) -> jinja2.Environment:
+    """Create cached Jinja2 environment with custom filters and template loaders.
+    
+    Args:
+        input_file_path: Path to input file for user template override resolution.
+    
+    Returns:
+        Configured Jinja2 environment with filters and loaders.
+    """
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(
+            [
+                (  # To allow users to override the templates:
+                    input_file_path.parent if input_file_path else pathlib.Path.cwd()
+                ),
+                templates_directory,
+            ]
+        ),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    env.filters["clean_url"] = clean_url
+    env.filters["strip"] = lambda string: string.strip()
+    return env
+```
+
+**Location:** `src/rendercv/renderer/templater/templater.py:17`
+
+### Template Loader Hierarchy
+
+Templates are loaded in this order:
+
+1. **User directory** (next to input file) - enables custom overrides
+2. **Built-in templates** - default templates from package
+
+**Example:**
+To override the header template for the classic theme:
+```
+my_cv/
+├── John_Doe_CV.yaml
+└── classic/
+    └── Header.j2.typ  # Custom header template
+```
+
+## Template Rendering Functions
+
+### render_full_template
+
+Render complete CV document by assembling all components.
+
+```python
+def render_full_template(
+    rendercv_model: RenderCVModel, 
+    file_type: Literal["typst", "markdown"]
+) -> str:
+    """Render complete CV document by assembling preamble, header, and sections.
+    
+    Args:
+        rendercv_model: CV model to render.
+        file_type: Output format for template selection and processing.
+    
+    Returns:
+        Complete rendered document as string.
+    """
+    extension = {
+        "typst": "typ",
+        "markdown": "md",
+    }[file_type]
+    
+    download_photo_from_url(rendercv_model)
+    rendercv_model = process_model(rendercv_model, file_type)
+    
+    header = render_single_template(
+        file_type,
+        f"Header.j2.{extension}",
+        rendercv_model,
+    )
+    if file_type == "typst":
+        preamble = render_single_template(
+            file_type,
+            f"Preamble.j2.{extension}",
+            rendercv_model,
+        )
+        code = f"{preamble}\n\n{header}\n"
+    else:
+        code = f"{header}\n"
+    
+    for rendercv_section in rendercv_model.cv.rendercv_sections:
+        section_beginning = render_single_template(
+            file_type,
+            f"SectionBeginning.j2.{extension}",
+            rendercv_model,
+            section_title=rendercv_section.title,
+            snake_case_section_title=rendercv_section.snake_case_title,
+            entry_type=rendercv_section.entry_type,
+        )
+        section_ending = render_single_template(
+            file_type,
+            f"SectionEnding.j2.{extension}",
+            rendercv_model,
+            entry_type=rendercv_section.entry_type,
+        )
+        entry_codes = []
+        for entry in rendercv_section.entries:
+            entry_code = render_single_template(
+                file_type,
+                f"entries/{rendercv_section.entry_type}.j2.{extension}",
+                rendercv_model,
+                entry=entry,
+            )
+            entry_codes.append(entry_code)
+        entries_code = "\n\n".join(entry_codes)
+        section_code = f"{section_beginning}\n{entries_code}\n{section_ending}"
+        code += f"\n{section_code}"
+    
+    return code
+```
+
+**Location:** `src/rendercv/renderer/templater/templater.py:51`
+
+### render_single_template
+
+Render a single Jinja2 template with model context.
+
+```python
+def render_single_template(
+    file_type: Literal["markdown", "typst", "html"],
+    relative_template_path: str,
+    rendercv_model: RenderCVModel,
+    **kwargs,
+) -> str:
+    """Render single Jinja2 template with user override support.
+    
+    Args:
+        file_type: Format for template directory selection.
+        relative_template_path: Template file path relative to format directory.
+        rendercv_model: CV model providing template context.
+        **kwargs: Additional template variables.
+    
+    Returns:
+        Rendered template as string.
+    """
+    jinja2_environment = get_jinja2_environment(rendercv_model._input_file_path)
+    template = None
+    if file_type == "typst":
+        # Try user's own Typst templates first:
+        with contextlib.suppress(jinja2.TemplateNotFound):
+            template = jinja2_environment.get_template(
+                f"{rendercv_model.design.theme}/{relative_template_path}"
+            )
+    
+    if template is None:
+        template = jinja2_environment.get_template(
+            f"{file_type}/{relative_template_path}"
+        )
+    
+    return template.render(
+        cv=rendercv_model.cv,
+        design=rendercv_model.design,
+        locale=rendercv_model.locale,
+        settings=rendercv_model.settings,
+        **kwargs,
+    )
+```
+
+**Location:** `src/rendercv/renderer/templater/templater.py:159`
+
+## Template Context
+
+All templates receive these context variables:
+
+<ResponseField name="cv" type="Cv">
+  CV content including name, sections, and contact information
+</ResponseField>
+
+<ResponseField name="design" type="Design">
+  Design configuration including theme, colors, typography, and layout settings
+</ResponseField>
+
+<ResponseField name="locale" type="Locale">
+  Locale settings for internationalization (date formats, translations)
+</ResponseField>
+
+<ResponseField name="settings" type="Settings">
+  Render settings and configuration
+</ResponseField>
+
+**Additional context variables** can be passed via `**kwargs` to `render_single_template`.
+
+## Template Structure
+
+### Typst Templates
+
+```
+templates/typst/
+├── Preamble.j2.typ           # Document setup, fonts, functions
+├── Header.j2.typ              # Name, headline, connections
+├── SectionBeginning.j2.typ    # Section title and opening
+├── SectionEnding.j2.typ       # Section closing
+└── entries/
+    ├── ExperienceEntry.j2.typ
+    ├── EducationEntry.j2.typ
+    ├── PublicationEntry.j2.typ
+    ├── NormalEntry.j2.typ
+    ├── OneLineEntry.j2.typ
+    ├── BulletEntry.j2.typ
+    ├── NumberedEntry.j2.typ
+    ├── ReversedNumberedEntry.j2.typ
+    └── TextEntry.j2.typ
+```
+
+### Markdown Templates
+
+```
+templates/markdown/
+├── Header.j2.md               # Name and connections
+├── SectionBeginning.j2.md     # Section heading
+├── SectionEnding.j2.md        # Section closing
+└── entries/
+    ├── ExperienceEntry.j2.md
+    ├── EducationEntry.j2.md
+    └── ...
+```
+
+### HTML Templates
+
+```
+templates/html/
+└── Full.html                  # Complete HTML wrapper with CSS
+```
+
+## Custom Filters
+
+The templater provides custom Jinja2 filters:
+
+### clean_url
+
+Remove protocol and trailing slashes from URLs for display.
+
+```python
+env.filters["clean_url"] = clean_url
+```
+
+**Example:**
+```jinja
+{{ "https://github.com/username" | clean_url }}
+{# Output: github.com/username #}
+```
+
+### strip
+
+Remove leading and trailing whitespace.
+
+```python
+env.filters["strip"] = lambda string: string.strip()
+```
+
+**Example:**
+```jinja
+{{ "  text with spaces  " | strip }}
+{# Output: text with spaces #}
+```
+
+## Model Processing
+
+Before rendering, the model is processed to prepare template-friendly data.
+
+### Model Processor
+
+The model processor handles:
+
+- **Date formatting** - Convert date objects to locale-aware strings
+- **Connection formatting** - Format phone numbers, emails, URLs
+- **Markdown parsing** - Convert Markdown to Typst/HTML syntax
+- **Photo handling** - Download URLs and resolve paths
+- **Custom templates** - Process user-defined entry templates
+
+```python
+rendercv_model = process_model(rendercv_model, file_type)
+```
+
+**Location:** `src/rendercv/renderer/templater/model_processor.py`
+
+### Photo URL Download
+
+Photos specified as URLs are downloaded automatically:
+
+```python
+def download_photo_from_url(rendercv_model: RenderCVModel) -> None:
+    """Download photo from URL if specified."""
+    photo = rendercv_model.cv.photo
+    if isinstance(photo, pydantic.HttpUrl):
+        # Download and save to temporary location
+        # Update model with local path
+```
+
+**Location:** `src/rendercv/renderer/templater/model_processor.py`
+
+## HTML Rendering
+
+HTML generation requires converting Markdown to HTML:
+
+### render_html
+
+Convert Markdown to HTML and wrap with template.
+
+```python
+def render_html(rendercv_model: RenderCVModel, markdown: str) -> str:
+    """Convert Markdown to HTML and wrap with full HTML template.
+    
+    Args:
+        rendercv_model: CV model for template context.
+        markdown: Markdown content to convert.
+    
+    Returns:
+        Complete HTML document.
+    """
+    html_body = markdown_to_html(markdown)
+    return render_single_template(
+        "html", "Full.html", rendercv_model, html_body=html_body
+    )
+```
+
+**Location:** `src/rendercv/renderer/templater/templater.py:131`
+
+### Markdown to HTML Conversion
+
+The `markdown_to_html` function uses Python-Markdown:
+
+```python
+def markdown_to_html(markdown: str) -> str:
+    """Convert Markdown to HTML."""
+    import markdown
+    return markdown.markdown(markdown)
+```
+
+**Location:** `src/rendercv/renderer/templater/markdown_parser.py`
+
+## Template Examples
+
+<Tabs>
+  <Tab title="Typst Header">
+    ```typst Header.j2.typ
+    #let name = "{{ cv.name }}"
+    #let headline = "{{ cv.headline }}"
+    #let location = "{{ cv.location }}"
+    
+    #text(
+        size: design.typography.font_size.name,
+        fill: design.colors.name,
+        weight: {% if design.typography.bold.name %}"bold"{% else %}"regular"{% endif %},
+        name
+    )
+    ```
+  </Tab>
+  
+  <Tab title="Markdown Entry">
+    ```markdown ExperienceEntry.j2.md
+    ## {{ entry.position }}, {{ entry.company }}
+    
+    *{{ entry.location }} | {{ entry.date }}*
+    
+    {% if entry.summary %}
+    {{ entry.summary }}
+    {% endif %}
+    
+    {% if entry.highlights %}
+    {% for highlight in entry.highlights %}
+    - {{ highlight }}
+    {% endfor %}
+    {% endif %}
+    ```
+  </Tab>
+  
+  <Tab title="Custom Override">
+    ```typst classic/Header.j2.typ
+    {# Custom header template #}
+    {# Place in directory next to input file #}
+    
+    #text(
+        size: 40pt,  {# Custom size #}
+        fill: rgb("#ff0000"),  {# Custom color #}
+        cv.name.upper()  {# Uppercase name #}
+    )
+    ```
+  </Tab>
+</Tabs>
+
+## Template Override Workflow
+
+<Steps>
+  <Step title="Create theme directory">
+    Create a directory matching your theme name next to your input file:
+    ```bash
+    mkdir classic
+    ```
+  </Step>
+  
+  <Step title="Copy template to override">
+    Find the template you want to customize in the built-in templates and copy it:
+    ```bash
+    # Template structure: {theme}/{template_name}.j2.{extension}
+    cp /path/to/rendercv/templates/typst/Header.j2.typ classic/
+    ```
+  </Step>
+  
+  <Step title="Customize template">
+    Edit the template with your custom Jinja2 code:
+    ```typst classic/Header.j2.typ
+    {# Your custom header template #}
+    ```
+  </Step>
+  
+  <Step title="Render CV">
+    RenderCV will automatically use your custom template:
+    ```bash
+    rendercv render John_Doe_CV.yaml
+    ```
+  </Step>
+</Steps>
+
+## Performance Optimization
+
+<AccordionGroup>
+  <Accordion title="Environment Caching">
+    The Jinja2 environment is cached via `@functools.lru_cache(maxsize=1)` to avoid repeated filesystem scans. This significantly speeds up rendering when generating multiple formats.
+  </Accordion>
+  
+  <Accordion title="Model Preprocessing">
+    Model processing happens once before rendering, not during template execution. This moves expensive operations (date formatting, Markdown parsing) outside the template loop.
+  </Accordion>
+  
+  <Accordion title="Photo Caching">
+    Photos downloaded from URLs are cached and reused across all output formats, avoiding redundant downloads.
+  </Accordion>
+</AccordionGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Renderer" icon="file-pdf" href="/api/renderer">
+    Output generation pipeline
+  </Card>
+  <Card title="Design Model" icon="palette" href="/api/design-model">
+    Template customization options
+  </Card>
+  <Card title="CV Model" icon="address-card" href="/api/cv-model">
+    Available template variables
+  </Card>
+  <Card title="Jinja2 Docs" icon="external-link" href="https://jinja.palletsprojects.com/">
+    Official Jinja2 documentation
+  </Card>
+</CardGroup>

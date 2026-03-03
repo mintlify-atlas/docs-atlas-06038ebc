@@ -1,0 +1,442 @@
+---
+title: rendercv create-theme
+description: Create a custom theme with editable Typst templates for complete design control
+---
+
+The `rendercv create-theme` command creates a custom theme folder with Typst template files that you can edit to fully customize your CV's design.
+
+<Note>
+  This is an advanced feature. Most users should use the [built-in themes](/guides/themes) and customize them using the `design` section in their YAML file.
+</Note>
+
+## When to Create a Custom Theme
+
+Consider creating a custom theme if you:
+
+- Want design changes that aren't possible with built-in theme options
+- Need a completely unique layout or structure
+- Want to match a specific company or institution's branding
+- Are comfortable editing Typst template files
+
+<Tip>
+  Before creating a custom theme, check if you can achieve your goal using [design customization](/guides/design-customization). Built-in themes support extensive customization without editing templates.
+</Tip>
+
+## Basic Usage
+
+```bash
+rendercv create-theme mytheme
+```
+
+This creates a folder named `mytheme/` in your current directory with all the necessary template files.
+
+## Command Options
+
+<ParamField path="theme_name" type="string" required>
+  The name of your new theme (will be used as the folder name)
+
+  ```bash
+  rendercv create-theme mycompanytheme
+  ```
+
+  The theme name should:
+  - Be a valid folder name (no special characters like `/`, `\`, `:`, etc.)
+  - Be descriptive and memorable
+  - Use lowercase letters and underscores (recommended)
+
+  <Note>
+    If a folder with this name already exists, the command will fail to prevent overwriting.
+  </Note>
+</ParamField>
+
+## What Gets Created
+
+Running `rendercv create-theme mytheme` creates:
+
+```
+mytheme/
+├── __init__.py           # Python file for design options (optional)
+├── Header.j2.typ         # Header section template
+├── Education.j2.typ      # Education entries template
+├── Experience.j2.typ     # Experience entries template
+├── Publication.j2.typ    # Publication entries template
+├── OneLineEntry.j2.typ   # One-line entries template (skills, etc.)
+├── TextEntry.j2.typ      # Text block entries template
+├── Preamble.j2.typ       # Document setup and imports
+└── SectionBeginning.j2.typ  # Section headers template
+```
+
+### Output Message
+
+After creating the theme, you'll see:
+
+```
+┌─ Theme created ───────────────────────────────────────┐
+│ ✓ Created your custom theme: ./mytheme               │
+│                                                        │
+│ What you can do with this theme:                      │
+│ 1. Modify the Typst templates in ./mytheme/           │
+│ 2. Edit ./mytheme/__init__.py to:                     │
+│     - Add your own design options to use in the YAML  │
+│     - Change the default values of existing options   │
+│     - Or simply delete it if you only want to         │
+│       customize templates                             │
+│                                                        │
+│ To use your theme, set in your YAML input file:       │
+│   design:                                              │
+│     theme: mytheme                                     │
+└────────────────────────────────────────────────────────┘
+```
+
+## Template Files Explained
+
+Each `.j2.typ` file is a [Jinja2](https://jinja.palletsprojects.com/) template that generates Typst code.
+
+<AccordionGroup>
+  <Accordion title="Preamble.j2.typ">
+    Contains the document setup:
+    - Page size and margins
+    - Font imports
+    - Custom Typst functions
+    - Global styling
+
+    This is rendered once at the beginning of the CV.
+  </Accordion>
+
+  <Accordion title="Header.j2.typ">
+    Renders the CV header with:
+    - Your name
+    - Contact information (phone, email, website, location)
+    - Social media links (LinkedIn, GitHub, etc.)
+
+    Rendered once per CV.
+  </Accordion>
+
+  <Accordion title="SectionBeginning.j2.typ">
+    Renders section headers like "Education", "Experience", etc.
+
+    Rendered once per section.
+  </Accordion>
+
+  <Accordion title="Education.j2.typ">
+    Renders education entries with:
+    - Institution name
+    - Degree and major
+    - Dates
+    - GPA, highlights, and other details
+
+    Rendered once per education entry.
+  </Accordion>
+
+  <Accordion title="Experience.j2.typ">
+    Renders work experience entries with:
+    - Company and position
+    - Location and dates
+    - Bullet points of achievements
+
+    Rendered once per experience entry.
+  </Accordion>
+
+  <Accordion title="Publication.j2.typ">
+    Renders publication entries with:
+    - Title, authors, journal
+    - DOI and other publication details
+
+    Rendered once per publication entry.
+  </Accordion>
+
+  <Accordion title="OneLineEntry.j2.typ">
+    Renders simple entries that fit on one line:
+    - Skills ("Python, JavaScript, SQL")
+    - Certifications
+    - Languages
+
+    Rendered once per one-line entry.
+  </Accordion>
+
+  <Accordion title="TextEntry.j2.typ">
+    Renders free-form text blocks:
+    - Summary statements
+    - Custom sections
+
+    Rendered once per text entry.
+  </Accordion>
+</AccordionGroup>
+
+## The __init__.py File (Optional)
+
+The `__init__.py` file lets you define custom design options for your theme. This is optional - you can delete it if you only want to customize templates.
+
+### Example __init__.py
+
+```python
+from pydantic import BaseModel
+from rendercv.themes.common_options import ClassicThemeOptions
+
+class MyThemeOptions(ClassicThemeOptions):
+    """Extend the base theme with custom options."""
+    header_font_size: str = "24pt"
+    accent_color: str = "rgb(0, 0, 255)"
+    show_photo: bool = False
+```
+
+Now you can use these options in your YAML file:
+
+```yaml
+design:
+  theme: mytheme
+  options:
+    header_font_size: 28pt
+    accent_color: rgb(200, 0, 0)
+    show_photo: true
+```
+
+<Tip>
+  Look at the built-in theme files in the [RenderCV source code](https://github.com/sinaatalay/rendercv) for examples of how to structure your `__init__.py`.
+</Tip>
+
+## Using Your Custom Theme
+
+Once you've created and customized your theme, use it in your CV:
+
+```yaml
+design:
+  theme: mytheme
+  options:
+    # Any custom options from __init__.py
+    header_font_size: 26pt
+```
+
+<Warning>
+  The theme folder must be in the same directory as your YAML file, or RenderCV won't find it.
+</Warning>
+
+## Template Syntax Basics
+
+Templates use Jinja2 syntax to access data from your YAML file:
+
+```jinja
+{# Comments look like this #}
+
+{# Access variables #}
+{{ cv.name }}
+{{ entry.title }}
+{{ design.options.color }}
+
+{# Conditional rendering #}
+{% if entry.location %}
+  {{ entry.location }}
+{% endif %}
+
+{# Loops #}
+{% for item in entry.highlights %}
+  - {{ item }}
+{% endfor %}
+
+{# Filters #}
+{{ entry.date | format_date }}
+```
+
+The templates have access to:
+- `cv` - All data from the `cv` section of your YAML
+- `design` - All data from the `design` section
+- `locale_catalog` - Translated strings
+- `entry` - The current entry being rendered (in entry templates)
+
+## Examples
+
+<CodeGroup>
+```bash Create Theme
+rendercv create-theme mycompany
+```
+
+```bash Create Multiple Themes
+rendercv create-theme academic
+rendercv create-theme corporate
+rendercv create-theme creative
+```
+</CodeGroup>
+
+## Workflow: Customizing a Theme
+
+<Steps>
+  <Step title="Create the theme">
+    ```bash
+    rendercv create-theme mytheme
+    ```
+  </Step>
+
+  <Step title="Start with a working CV">
+    Make sure your CV renders successfully with a built-in theme first:
+
+    ```yaml
+    design:
+      theme: classic  # Start with a built-in theme
+    ```
+
+    ```bash
+    rendercv render CV.yaml
+    ```
+  </Step>
+
+  <Step title="Switch to your custom theme">
+    ```yaml
+    design:
+      theme: mytheme
+    ```
+
+    ```bash
+    rendercv render CV.yaml
+    ```
+
+    It should look the same as before (templates are copied from the classic theme).
+  </Step>
+
+  <Step title="Edit one template at a time">
+    Start with small changes to one template, like `Header.j2.typ`:
+
+    ```typst
+    #let header_first_line = text(
+      size: 28pt,  /* Changed from 24pt */
+      weight: "bold",
+      [#name]
+    )
+    ```
+
+    Save and re-render:
+    ```bash
+    rendercv render CV.yaml --watch
+    ```
+  </Step>
+
+  <Step title="Test frequently">
+    After each change, check that:
+    - The PDF renders without errors
+    - The layout looks correct
+    - All your data is displayed
+  </Step>
+
+  <Step title="Add custom options (optional)">
+    Edit `__init__.py` to add configurable options:
+
+    ```python
+    class MyThemeOptions(ClassicThemeOptions):
+        header_font_size: str = "24pt"
+    ```
+
+    Reference them in your templates:
+
+    ```jinja
+    size: {{ design.options.header_font_size }},
+    ```
+  </Step>
+</Steps>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Version Control" icon="code-branch">
+    Keep your theme folder in version control (Git) so you can track changes and revert if needed.
+  </Card>
+
+  <Card title="Start Small" icon="seedling">
+    Make incremental changes and test after each one. Don't try to redesign everything at once.
+  </Card>
+
+  <Card title="Copy from Built-in Themes" icon="copy">
+    Look at the built-in theme source code for examples and patterns to follow.
+  </Card>
+
+  <Card title="Document Your Options" icon="book">
+    Add comments to your `__init__.py` explaining what each option does.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: Theme folder already exists">
+    The folder name you chose already exists. Either:
+    - Choose a different name: `rendercv create-theme mytheme2`
+    - Delete the existing folder: `rm -rf mytheme`
+    - Rename the existing folder: `mv mytheme mytheme_backup`
+  </Accordion>
+
+  <Accordion title="Error: Theme 'mytheme' not found when rendering">
+    Make sure:
+    - The theme folder is in the same directory as your YAML file
+    - The folder name matches exactly what you put in `design.theme`
+    - The folder contains all the required `.j2.typ` files
+
+    ```bash
+    # Check folder location
+    ls -la mytheme/
+
+    # Verify you're in the correct directory
+    pwd
+    ```
+  </Accordion>
+
+  <Accordion title="Typst compilation errors">
+    Syntax errors in your templates will cause Typst compilation to fail. The error message will show:
+    - Which template file has the error
+    - The line number
+    - What went wrong
+
+    Common issues:
+    - Unmatched brackets `{` `}` or parentheses `(` `)`
+    - Invalid Typst syntax
+    - Referencing undefined variables
+  </Accordion>
+
+  <Accordion title="Custom options not working">
+    If your custom options in `__init__.py` aren't being recognized:
+    - Make sure the syntax is valid Python
+    - Check that your class inherits from `ClassicThemeOptions` or another base class
+    - Verify you're using the correct field types (`str`, `bool`, etc.)
+    - Make sure you're referencing them correctly in templates: `{{ design.options.your_option }}`
+  </Accordion>
+
+  <Accordion title="Missing or blank content in PDF">
+    If parts of your CV aren't showing up:
+    - Check that you're accessing the correct variable names in templates
+    - Verify your YAML file has the data you're trying to display
+    - Look for Jinja2 conditional blocks that might be hiding content
+    - Make sure loops are iterating over the right collections
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Resources
+
+<CardGroup cols={2}>
+  <Card title="Jinja2 Documentation" icon="link" href="https://jinja.palletsprojects.com/">
+    Learn the template syntax used in `.j2.typ` files
+  </Card>
+  <Card title="Typst Documentation" icon="link" href="https://typst.app/docs/">
+    Learn Typst syntax for document layout and styling
+  </Card>
+  <Card title="RenderCV Source" icon="github" href="https://github.com/sinaatalay/rendercv/tree/main/rendercv/themes">
+    Browse built-in theme implementations for examples
+  </Card>
+  <Card title="Design Customization" icon="paintbrush" href="/guides/design-customization">
+    Learn about built-in design options before creating a custom theme
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+After creating your custom theme:
+
+<Steps>
+  <Step title="Customize templates">
+    Edit the `.j2.typ` files to implement your design vision.
+  </Step>
+
+  <Step title="Test thoroughly">
+    Render your CV with different data to ensure the templates work in all cases.
+  </Step>
+
+  <Step title="Share your theme">
+    Consider sharing your theme with the RenderCV community on GitHub!
+  </Step>
+</Steps>

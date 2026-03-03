@@ -1,0 +1,455 @@
+---
+title: YAML File Structure
+description: Learn the complete structure of RenderCV's YAML input files, including cv, design, locale, and settings sections.
+---
+
+RenderCV uses a single YAML file to generate your CV. This file has four top-level fields that control different aspects of your CV:
+
+```yaml
+cv:
+  # Your content (name, sections, entries)
+design:
+  # Visual styling (theme, colors, fonts, spacing)
+locale:
+  # Language strings (month names, "present", etc.)
+settings:
+  # RenderCV behavior (current date, bold keywords)
+```
+
+Only `cv` is required. The other fields have sensible defaults that you can override as needed.
+
+## The Four Main Sections
+
+<CardGroup cols={2}>
+  <Card title="cv" icon="user" href="#cv-section">
+    Your personal information and CV content
+  </Card>
+  <Card title="design" icon="palette" href="#design-section">
+    Visual appearance and typography
+  </Card>
+  <Card title="locale" icon="language" href="#locale-section">
+    Language and date formatting
+  </Card>
+  <Card title="settings" icon="gear" href="#settings-section">
+    RenderCV behavior and output options
+  </Card>
+</CardGroup>
+
+## cv Section
+
+The `cv` field contains your personal information and all CV content.
+
+### Personal Information
+
+All header fields are optional. RenderCV adapts to whatever you provide:
+
+```yaml
+cv:
+  name: John Doe
+  headline: Machine Learning Engineer
+  location: San Francisco, CA
+  email: john.doe@email.com
+  phone: +14155551234
+  website: https://johndoe.com
+  photo: photo.jpg
+  social_networks:
+    - network: LinkedIn
+      username: johndoe
+    - network: GitHub
+      username: johndoe
+  custom_connections:
+    - placeholder: Book a call
+      url: https://cal.com/johndoe
+      fontawesome_icon: calendar-days
+```
+
+<Note>
+  You can provide multiple emails, phone numbers, or websites as lists. For example: `email: [john@work.com, john@personal.com]`
+</Note>
+
+### Sections
+
+The `sections` field holds the main content of your CV. It's a dictionary where:
+
+- **Keys** are section titles (can be anything)
+- **Values** are lists of entries
+
+```yaml
+cv:
+  name: John Doe
+  sections:
+    experience:
+      - company: Nexus AI
+        position: Co-Founder & CTO
+        start_date: 2023-06
+        end_date: present
+        location: San Francisco, CA
+        highlights:
+          - Built foundation model infrastructure serving 2M+ monthly API requests
+          - Raised $18M Series A led by Sequoia Capital
+          - Scaled engineering team from 3 to 28
+    
+    education:
+      - institution: Princeton University
+        area: Computer Science
+        degree: PhD
+        start_date: 2018-09
+        end_date: 2023-05
+        location: Princeton, NJ
+        highlights:
+          - 'Thesis: Efficient Neural Architecture Search'
+          - 'Advisor: Prof. Sanjeev Arora'
+    
+    skills:
+      - label: Languages
+        details: Python, C++, CUDA, Rust, Julia
+      - label: ML Frameworks
+        details: PyTorch, JAX, TensorFlow, Triton, ONNX
+```
+
+<Warning>
+  Each section must contain only one type of entry. You cannot mix `ExperienceEntry` and `EducationEntry` in the same section.
+</Warning>
+
+### Entry Types
+
+RenderCV provides 9 entry types:
+
+<Tabs>
+  <Tab title="ExperienceEntry">
+    For work history and professional roles.
+
+    ```yaml
+    experience:
+      - company: NVIDIA Research
+        position: Research Intern
+        start_date: 2022-05
+        end_date: 2022-08
+        location: Santa Clara, CA
+        highlights:
+          - Designed sparse attention mechanism
+          - Co-authored NeurIPS 2022 paper
+    ```
+
+    **Fields:**
+    - `company` (required): Employer name
+    - `position` (required): Job title
+    - `start_date`: Start date (YYYY-MM format)
+    - `end_date`: End date or "present"
+    - `location`: Office location
+    - `summary`: Role description
+    - `highlights`: List of accomplishments
+  </Tab>
+
+  <Tab title="EducationEntry">
+    For academic credentials.
+
+    ```yaml
+    education:
+      - institution: Princeton University
+        area: Computer Science
+        degree: PhD
+        start_date: 2018-09
+        end_date: 2023-05
+        location: Princeton, NJ
+        highlights:
+          - 'GPA: 3.97/4.00'
+          - NSF Graduate Research Fellowship
+    ```
+
+    **Fields:**
+    - `institution` (required): School name
+    - `area` (required): Field of study
+    - `degree`: Degree type (BS, MS, PhD)
+    - `start_date`: Start date
+    - `end_date`: End date or "present"
+    - `location`: Institution location
+    - `highlights`: Achievements or awards
+  </Tab>
+
+  <Tab title="PublicationEntry">
+    For papers and publications.
+
+    ```yaml
+    publications:
+      - title: 'Sparse Mixture-of-Experts at Scale'
+        authors:
+          - '*John Doe*'
+          - Sarah Williams
+          - David Park
+        journal: NeurIPS 2023
+        doi: 10.1234/neurips.2023.1234
+        date: 2023-07
+    ```
+
+    **Fields:**
+    - `title` (required): Publication title
+    - `authors` (required): Author list (use `*Name*` for emphasis)
+    - `journal`: Conference or journal name
+    - `doi`: Digital Object Identifier
+    - `url`: Link to publication
+    - `date`: Publication date
+  </Tab>
+
+  <Tab title="NormalEntry">
+    Flexible entry for projects, awards, etc.
+
+    ```yaml
+    projects:
+      - name: '[FlashInfer](https://github.com/)'
+        start_date: 2023-01
+        end_date: present
+        summary: High-performance LLM inference library
+        highlights:
+          - 2.8x speedup over baseline implementations
+          - 8,500+ GitHub stars
+    ```
+  </Tab>
+
+  <Tab title="OneLineEntry">
+    Compact key-value pairs for skills.
+
+    ```yaml
+    skills:
+      - label: Languages
+        details: Python, C++, CUDA, Rust
+      - label: Infrastructure
+        details: Kubernetes, AWS, GCP
+    ```
+  </Tab>
+
+  <Tab title="BulletEntry">
+    Simple bullet points.
+
+    ```yaml
+    honors:
+      - bullet: MIT Tech Review 35 Under 35 (2024)
+      - bullet: Forbes 30 Under 30 (2024)
+    ```
+  </Tab>
+
+  <Tab title="NumberedEntry">
+    Automatically numbered entries.
+
+    ```yaml
+    patents:
+      - number: Hardware-Aware Neural Architecture Search (US Patent 11,456,789)
+    ```
+  </Tab>
+
+  <Tab title="ReversedNumberedEntry">
+    Numbered countdown (recent items first).
+
+    ```yaml
+    talks:
+      - reversed_number: Scaling Laws for Efficient Inference — Stanford HAI (2024)
+      - reversed_number: Building AI Infrastructure — TechCrunch Disrupt (2024)
+    ```
+  </Tab>
+
+  <Tab title="TextEntry">
+    Plain text without structure.
+
+    ```yaml
+    summary:
+      - Software engineer with 10 years of experience in distributed systems.
+    ```
+  </Tab>
+</Tabs>
+
+## design Section
+
+Controls all visual aspects. Start with a theme and customize as needed:
+
+```yaml
+design:
+  theme: classic  # Options: classic, moderncv, sb2nov, engineeringresumes, engineeringclassic
+  
+  # Override theme defaults:
+  colors:
+    name: rgb(255, 0, 0)
+    section_titles: rgb(0, 79, 144)
+  
+  typography:
+    font_family:
+      body: Source Sans 3
+    font_size:
+      name: 30pt
+```
+
+See the [Themes](/guides/themes) and [Design Customization](/guides/design-customization) guides for details.
+
+## locale Section
+
+Customize language and date formatting:
+
+```yaml
+locale:
+  language: english  # 12 built-in languages available
+  
+  # Override specific strings:
+  present: now
+  month_abbreviations:
+    - Jan
+    - Feb
+    - Mar
+    # ...
+```
+
+See the [Localization](/guides/localization) guide for details.
+
+## settings Section
+
+Configure RenderCV's behavior:
+
+```yaml
+settings:
+  current_date: today  # Or specific date: '2025-12-03'
+  
+  render_command:
+    output_folder: rendercv_output
+    pdf_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.pdf
+    dont_generate_html: false
+  
+  bold_keywords:
+    - Python
+    - AWS
+    - Machine Learning
+  
+  pdf_title: NAME - CV
+```
+
+### Key Settings
+
+<AccordionGroup>
+  <Accordion title="current_date">
+    Date used for:
+    - File naming (when using date placeholders)
+    - "Last updated" text in the top note
+    - Time span calculations for ongoing entries (`end_date: present`)
+    
+    Set to `today` for automatic current date, or specify: `'2025-12-03'`
+  </Accordion>
+
+  <Accordion title="bold_keywords">
+    List of keywords to bold automatically throughout your CV:
+
+    ```yaml
+    bold_keywords:
+      - Python
+      - TensorFlow
+      - AWS
+    ```
+
+    These will be bolded in highlights, summaries, and all other text fields.
+  </Accordion>
+
+  <Accordion title="render_command">
+    Control output paths and file generation:
+
+    ```yaml
+    render_command:
+      output_folder: my_cv_output
+      pdf_path: OUTPUT_FOLDER/cv.pdf
+      dont_generate_markdown: false
+      dont_generate_html: false
+      dont_generate_png: true
+    ```
+
+    **Available placeholders:** `NAME`, `NAME_IN_SNAKE_CASE`, `MONTH_NAME`, `YEAR`, etc.
+  </Accordion>
+</AccordionGroup>
+
+## Text Formatting
+
+All text fields support Markdown and Typst:
+
+### Markdown
+
+```yaml
+highlights:
+  - Increased revenue by **$2M** annually
+  - Developed [open-source tool](https://github.com/example) with *500+ stars*
+  - Used `kubectl` for container orchestration
+```
+
+- `**text**` → **bold**
+- `*text*` → *italic*
+- `[text](url)` → hyperlink
+- `` `code` `` → `code`
+
+### Typst Math & Commands
+
+```yaml
+highlights:
+  - Proved that $$f(x) = x^2$$ is a parabola
+  - "This is #emph[emphasized] text"
+```
+
+## Complete Example
+
+Here's a minimal but complete YAML file:
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.7/schema.json
+
+cv:
+  name: John Doe
+  location: San Francisco, CA
+  email: john@example.com
+  social_networks:
+    - network: LinkedIn
+      username: johndoe
+    - network: GitHub
+      username: johndoe
+  
+  sections:
+    experience:
+      - company: Tech Corp
+        position: Senior Engineer
+        start_date: 2020-01
+        end_date: present
+        location: San Francisco, CA
+        highlights:
+          - Led migration to microservices
+          - Reduced costs by 40%
+    
+    education:
+      - institution: MIT
+        area: Computer Science
+        degree: BS
+        start_date: 2012-09
+        end_date: 2016-05
+    
+    skills:
+      - label: Languages
+        details: Python, Go, TypeScript
+      - label: Cloud
+        details: AWS, Kubernetes
+
+design:
+  theme: classic
+
+locale:
+  language: english
+
+settings:
+  current_date: today
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Themes" icon="palette" href="/guides/themes">
+    Learn about the 5 built-in themes
+  </Card>
+  <Card title="Customize Design" icon="sliders" href="/guides/design-customization">
+    Fine-tune colors, fonts, and spacing
+  </Card>
+  <Card title="JSON Schema Setup" icon="check" href="/guides/json-schema">
+    Enable IDE autocomplete and validation
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/reference/cli">
+    Command-line options and usage
+  </Card>
+</CardGroup>

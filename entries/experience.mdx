@@ -1,0 +1,254 @@
+---
+title: Experience Entry
+description: Document your work history and professional experience
+---
+
+Experience entries are used to showcase your work history, internships, research positions, and professional experience in your CV.
+
+## Overview
+
+The `ExperienceEntry` is designed for professional positions. It prominently displays the company, position title, dates, location, and your key achievements and responsibilities.
+
+## Fields
+
+### Required Fields
+
+<ParamField path="company" type="string" required>
+  The name of the company or organization.
+  
+  **Examples:**
+  - `"Microsoft"`
+  - `"Google"`
+  - `"Princeton Plasma Physics Laboratory"`
+</ParamField>
+
+<ParamField path="position" type="string" required>
+  Your job title or position.
+  
+  **Examples:**
+  - `"Software Engineer"`
+  - `"Research Assistant"`
+  - `"Project Manager"`
+</ParamField>
+
+### Optional Fields
+
+<ParamField path="start_date" type="string">
+  The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
+  
+  **Examples:**
+  - `"2020-07-15"`
+  - `"2020-07"`
+  - `"2020"`
+</ParamField>
+
+<ParamField path="end_date" type="string">
+  The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. Use `"present"` for current positions.
+  
+  **Examples:**
+  - `"2024-05-20"`
+  - `"2024-05"`
+  - `"2024"`
+  - `"present"`
+</ParamField>
+
+<ParamField path="date" type="string">
+  Single date for short-term positions. Supports `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or custom text.
+  
+  Use this instead of `start_date` and `end_date` for single-day events.
+  
+  **Examples:**
+  - `"2020-09"`
+  - `"Summer 2020"`
+</ParamField>
+
+<ParamField path="location" type="string">
+  The location of the position.
+  
+  **Examples:**
+  - `"TX, USA"`
+  - `"New York, NY"`
+  - `"Remote"`
+</ParamField>
+
+<ParamField path="summary" type="string">
+  A brief overview of your role. Supports Markdown.
+  
+  **Example:**
+  ```yaml
+  summary: Led a team of 5 engineers to develop innovative solutions.
+  ```
+</ParamField>
+
+<ParamField path="highlights" type="list[string]">
+  A list of bullet points for key achievements, responsibilities, or contributions. Supports Markdown.
+  
+  **Examples:**
+  ```yaml
+  highlights:
+    - Increased system performance by 40% through optimization.
+    - Mentored 3 junior developers and conducted code reviews.
+    - Implemented CI/CD pipeline reducing deployment time by 60%.
+  ```
+</ParamField>
+
+## Date Behavior
+
+<Note>
+  **Important:** Date fields have special behavior:
+  - If only `start_date` is provided, `end_date` defaults to `"present"`
+  - If only `end_date` is provided, it's treated as a single `date`
+  - If `date` is provided, `start_date` and `end_date` are ignored
+</Note>
+
+## Examples
+
+### Basic Experience Entry
+
+```yaml
+experience:
+  - company: Some Company
+    position: Software Engineer
+    location: TX, USA
+    start_date: 2020-07
+    end_date: 2021-08-12
+```
+
+### Experience with Highlights
+
+```yaml
+experience:
+  - company: Some Company
+    position: Software Engineer
+    location: TX, USA
+    start_date: 2020-07
+    end_date: 2021-08-12
+    highlights:
+      - Developed an [IOS application](https://example.com) that has
+        received more than **100,000 downloads**.
+      - Managed a team of **5** engineers.
+```
+
+### Current Position (Startup Founder)
+
+```yaml
+experience:
+  - company: Nexus AI
+    position: Co-Founder & CTO
+    start_date: 2023-06
+    end_date: present
+    location: San Francisco, CA
+    highlights:
+      - Built foundation model infrastructure serving 2M+ monthly API requests with 99.97% uptime
+      - Raised $18M Series A led by Sequoia Capital, with participation from a16z and Founders Fund
+      - Scaled engineering team from 3 to 28 across ML research, platform, and applied AI divisions
+      - Developed proprietary inference optimization reducing latency by 73% compared to baseline
+```
+
+### Research Internship
+
+```yaml
+experience:
+  - company: NVIDIA Research
+    position: Research Intern
+    start_date: 2022-05
+    end_date: 2022-08
+    location: Santa Clara, CA
+    highlights:
+      - Designed sparse attention mechanism reducing transformer memory footprint by 4.2x
+      - Co-authored paper accepted at NeurIPS 2022 (spotlight presentation, top 5% of submissions)
+```
+
+### Position with Nested Highlights
+
+```yaml
+experience:
+  - company: Google DeepMind
+    position: Research Intern
+    start_date: 2021-05
+    end_date: 2021-08
+    location: London, UK
+    highlights:
+      - Developed reinforcement learning algorithms for multi-agent coordination
+      - Published research at top-tier venues with significant academic impact
+        - ICML 2022 main conference paper, cited 340+ times within two years
+        - NeurIPS 2022 workshop paper on emergent communication protocols
+        - Invited journal extension in JMLR (2023)
+```
+
+### Multiple Positions at Same Company
+
+```yaml
+experience:
+  - company: Apple ML Research
+    position: Research Intern
+    start_date: 2020-05
+    end_date: 2020-08
+    location: Cupertino, CA
+    highlights:
+      - Created on-device neural network compression pipeline deployed across 50M+ devices
+      - Filed 2 patents on efficient model quantization techniques for edge inference
+  
+  - company: Microsoft Research
+    position: Research Intern
+    start_date: 2019-05
+    end_date: 2019-08
+    location: Redmond, WA
+    highlights:
+      - Implemented novel self-supervised learning framework for low-resource language modeling
+      - Research integrated into Azure Cognitive Services, reducing training data requirements by 60%
+```
+
+## Markdown Support
+
+All text fields support Markdown formatting:
+
+```yaml
+experience:
+  - company: Tech Startup
+    position: Senior Backend Engineer
+    start_date: 2021-03
+    end_date: present
+    location: Remote
+    highlights:
+      - "Architected **microservices** infrastructure using *Kubernetes* and *Docker*"
+      - "Reduced API latency by **60%** through caching and query optimization"
+      - "[Open-sourced](https://github.com/example) internal tools with 1,000+ GitHub stars"
+```
+
+## Tips
+
+<Tip>
+  **Writing effective highlights:**
+  - Start with action verbs (Built, Developed, Led, Designed, Implemented)
+  - Quantify achievements with numbers and percentages
+  - Focus on impact and results, not just responsibilities
+  - Use Markdown to emphasize key metrics with **bold**
+  - Include links to public projects, products, or papers
+</Tip>
+
+<Tip>
+  **Ordering positions:**
+  - List positions in reverse chronological order (most recent first)
+  - For current positions, always use `end_date: present`
+  - Use consistent date formatting across all entries
+  - RenderCV will automatically calculate and display duration
+</Tip>
+
+<Warning>
+  **Date validation:**
+  - The `start_date` must be before the `end_date`
+  - Use only `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` formats for date ranges
+  - Custom text like "Summer 2020" is only allowed in the `date` field
+</Warning>
+
+## Related Entry Types
+
+<CardGroup cols={2}>
+  <Card title="Education Entry" icon="graduation-cap" href="/entries/education">
+    For academic background
+  </Card>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    For projects and volunteer work
+  </Card>
+</CardGroup>

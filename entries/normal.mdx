@@ -1,0 +1,293 @@
+---
+title: Normal Entry
+description: Document projects, awards, certifications, and general items
+---
+
+Normal entries are the most versatile entry type in RenderCV. They can be used for projects, awards, certifications, volunteer work, or any other items that need dates, locations, and highlights.
+
+## Overview
+
+The `NormalEntry` is a general-purpose entry type that works well for anything that doesn't fit the specific structure of Education, Experience, or Publication entries. It's perfect for projects, awards, certifications, volunteer work, and more.
+
+## Fields
+
+### Required Fields
+
+<ParamField path="name" type="string" required>
+  The name of the project, award, certification, or item.
+  
+  **Examples:**
+  - `"Some Project"`
+  - `"Some Event"`
+  - `"Some Award"`
+  - `"FlashInfer"`
+  - `"NeuralPrune"`
+</ParamField>
+
+### Optional Fields
+
+<ParamField path="start_date" type="string">
+  The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
+  
+  **Examples:**
+  - `"2020-09-24"`
+  - `"2020-09"`
+  - `"2020"`
+</ParamField>
+
+<ParamField path="end_date" type="string">
+  The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. Use `"present"` for ongoing items.
+  
+  **Examples:**
+  - `"2024-05-20"`
+  - `"2024-05"`
+  - `"2024"`
+  - `"present"`
+</ParamField>
+
+<ParamField path="date" type="string">
+  Single date for items without a range. Supports `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or custom text like `"Fall 2023"`.
+  
+  Use this instead of `start_date` and `end_date` for single-day events or imprecise dates.
+  
+  **Examples:**
+  - `"2021-09"`
+  - `"2021"`
+  - `"Fall 2023"`
+  - `"Summer 2020"`
+</ParamField>
+
+<ParamField path="location" type="string">
+  The location of the item.
+  
+  **Examples:**
+  - `"Istanbul, Türkiye"`
+  - `"New York, NY"`
+  - `"Remote"`
+</ParamField>
+
+<ParamField path="summary" type="string">
+  A brief description or overview. Supports Markdown.
+  
+  **Example:**
+  ```yaml
+  summary: This is a summary of the project.
+  ```
+</ParamField>
+
+<ParamField path="highlights" type="list[string]">
+  A list of bullet points for key achievements, features, or details. Supports Markdown.
+  
+  **Examples:**
+  ```yaml
+  highlights:
+    - Developed a web application with **React** and **Django**.
+    - Implemented a **RESTful API**
+  ```
+</ParamField>
+
+## Date Behavior
+
+<Note>
+  **Important:** Date fields have special behavior:
+  - If only `start_date` is provided, `end_date` defaults to `"present"`
+  - If only `end_date` is provided, it's treated as a single `date`
+  - If `date` is provided, `start_date` and `end_date` are ignored
+</Note>
+
+## Examples
+
+### Basic Normal Entry
+
+```yaml
+projects:
+  - name: Some Project
+    date: 2021-09
+    summary: This is a summary of the project.
+```
+
+### Project with Highlights
+
+```yaml
+projects:
+  - name: Some Project
+    date: 2021-09
+    summary: This is a summary of the project.
+    highlights:
+      - Developed a web application with **React** and **Django**.
+      - Implemented a **RESTful API**
+```
+
+### Open Source Project with Date Range
+
+```yaml
+projects:
+  - name: '[FlashInfer](https://github.com/)'
+    start_date: 2023-01
+    end_date: present
+    summary: Open-source library for high-performance LLM inference kernels
+    highlights:
+      - Achieved 2.8x speedup over baseline attention implementations on A100 GPUs
+      - Adopted by 3 major AI labs, 8,500+ GitHub stars, 200+ contributors
+```
+
+### Completed Project with Single Date
+
+```yaml
+projects:
+  - name: '[NeuralPrune](https://github.com/)'
+    date: '2021'
+    summary: Automated neural network pruning toolkit with differentiable masks
+    highlights:
+      - Reduced model size by 90% with less than 1% accuracy degradation on ImageNet
+      - Featured in PyTorch ecosystem tools, 4,200+ GitHub stars
+```
+
+### Award or Certification
+
+```yaml
+awards:
+  - name: Best Innovation Award
+    date: 2023-06
+    location: San Francisco, CA
+    summary: Awarded for developing the most innovative solution at the annual hackathon
+```
+
+### Volunteer Work
+
+```yaml
+volunteer:
+  - name: Code for Good
+    start_date: 2020-01
+    end_date: 2022-12
+    location: Boston, MA
+    summary: Volunteer software developer for non-profit organizations
+    highlights:
+      - Built web applications for 3 local charities
+      - Mentored 5 junior developers
+      - Organized monthly coding workshops
+```
+
+### Certification
+
+```yaml
+certifications:
+  - name: AWS Solutions Architect Professional
+    date: 2023-05
+    summary: Advanced AWS certification for designing distributed systems
+```
+
+### Conference or Event
+
+```yaml
+events:
+  - name: TechCrunch Disrupt
+    date: 2023-09
+    location: San Francisco, CA
+    summary: Presented startup pitch on stage
+    highlights:
+      - Selected as top 10 finalist from 500+ applications
+      - Received $50,000 investment offer
+```
+
+## Use Cases
+
+### Projects Section
+
+Perfect for showcasing personal projects, open-source contributions, or side projects:
+
+```yaml
+projects:
+  - name: Personal Portfolio Website
+    date: 2023
+    summary: Modern portfolio site built with Next.js and Tailwind CSS
+    highlights:
+      - Implemented server-side rendering for optimal performance
+      - Integrated CMS for blog posts
+      - Achieved 98+ Lighthouse score
+```
+
+### Awards Section
+
+```yaml
+awards:
+  - name: Hackathon Winner
+    date: 2023-03
+    location: MIT, Cambridge, MA
+    summary: First place in annual MIT hackathon with 200+ participants
+```
+
+### Certifications Section
+
+```yaml
+certifications:
+  - name: Google Cloud Professional Developer
+    date: 2022-11
+  - name: Certified Kubernetes Administrator
+    date: 2022-06
+```
+
+### Volunteer Experience
+
+```yaml
+volunteer:
+  - name: Girls Who Code Mentor
+    start_date: 2021-09
+    end_date: present
+    summary: Teaching programming fundamentals to high school students
+    highlights:
+      - Led weekly Python workshops
+      - Mentored 10+ students
+```
+
+## Markdown Support
+
+All text fields support Markdown formatting:
+
+```yaml
+projects:
+  - name: '[MyProject](https://github.com/user/myproject)'
+    date: 2023
+    summary: An **innovative** solution for *data processing*
+    highlights:
+      - "Built with **Python** and **FastAPI**"
+      - "[Live demo](https://demo.example.com) with 1,000+ users"
+```
+
+## Tips
+
+<Tip>
+  **Choosing between date formats:**
+  - Use `date` for awards, certifications, or one-time events
+  - Use `start_date` and `end_date` for projects or volunteer work
+  - For ongoing projects, just provide `start_date` (automatically becomes `present`)
+</Tip>
+
+<Tip>
+  **Writing effective highlights:**
+  - Start with action verbs (Built, Developed, Created, Designed)
+  - Quantify results (users, downloads, performance improvements)
+  - Include technologies used
+  - Add links to live demos or repositories using Markdown
+</Tip>
+
+<Tip>
+  **Organization:**
+  - Group similar items into sections (projects, awards, certifications)
+  - List items in reverse chronological order
+  - Keep the `name` field concise - use `summary` for longer descriptions
+</Tip>
+
+## Related Entry Types
+
+<CardGroup cols={3}>
+  <Card title="Experience Entry" icon="briefcase" href="/entries/experience">
+    For professional work history
+  </Card>
+  <Card title="Education Entry" icon="graduation-cap" href="/entries/education">
+    For academic degrees
+  </Card>
+  <Card title="One Line Entry" icon="minus" href="/entries/one-line">
+    For simple key-value items
+  </Card>
+</CardGroup>

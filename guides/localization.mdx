@@ -1,0 +1,539 @@
+---
+title: Localization
+description: Create CVs in any language by customizing date formatting, month names, and language-specific text in RenderCV.
+---
+
+The `locale` field lets you create a CV in any language. RenderCV includes built-in translations for 12 languages, and you can customize any text to match your needs.
+
+## Built-in Languages
+
+RenderCV includes ready-to-use translations:
+
+<CardGroup cols={3}>
+  <Card title="English" icon="flag-usa">
+    `language: english`
+  </Card>
+  <Card title="Spanish" icon="flag">
+    `language: spanish`
+  </Card>
+  <Card title="French" icon="flag">
+    `language: french`
+  </Card>
+  <Card title="German" icon="flag">
+    `language: german`
+  </Card>
+  <Card title="Italian" icon="flag">
+    `language: italian`
+  </Card>
+  <Card title="Portuguese" icon="flag">
+    `language: portuguese`
+  </Card>
+  <Card title="Dutch" icon="flag">
+    `language: dutch`
+  </Card>
+  <Card title="Turkish" icon="flag">
+    `language: turkish`
+  </Card>
+  <Card title="Chinese" icon="flag">
+    `language: chinese`
+  </Card>
+  <Card title="Japanese" icon="flag">
+    `language: japanese`
+  </Card>
+  <Card title="Korean" icon="flag">
+    `language: korean`
+  </Card>
+  <Card title="Russian" icon="flag">
+    `language: russian`
+  </Card>
+</CardGroup>
+
+## Using a Built-in Language
+
+Simply specify the language:
+
+```yaml
+locale:
+  language: german
+```
+
+That's it! All date formatting, month names, and other text will automatically use German.
+
+## Locale Fields
+
+The locale configuration includes:
+
+```yaml
+locale:
+  language: english
+  last_updated: Last updated in      # For top note
+  month: month                        # Singular
+  months: months                      # Plural
+  year: year                          # Singular
+  years: years                        # Plural
+  present: present                    # For ongoing positions
+  month_abbreviations:                # Short month names
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - May
+    - June
+    - July
+    - Aug
+    - Sept
+    - Oct
+    - Nov
+    - Dec
+  month_names:                        # Full month names
+    - January
+    - February
+    - March
+    - April
+    - May
+    - June
+    - July
+    - August
+    - September
+    - October
+    - November
+    - December
+```
+
+## Where Locale Affects Your CV
+
+### Date Formatting
+
+Locale controls how dates appear:
+
+```yaml
+cv:
+  sections:
+    experience:
+      - company: Tech Corp
+        start_date: 2020-05
+        end_date: 2023-08
+```
+
+**English:** May 2020 – Aug 2023  
+**German:** Mai 2020 – Aug 2023  
+**Spanish:** Mayo 2020 – Ago 2023
+
+### Time Spans
+
+For ongoing positions or when `show_time_spans_in` is enabled:
+
+```yaml
+end_date: present
+```
+
+**English:** 3 years 6 months  
+**German:** 3 Jahre 6 Monate  
+**Spanish:** 3 años 6 meses
+
+### Top Note
+
+The "last updated" message at the top of your CV:
+
+**English:** Last updated in March 2026  
+**German:** Zuletzt aktualisiert im März 2026  
+**Spanish:** Última actualización en marzo de 2026
+
+## Customizing Locale
+
+### Partial Override
+
+Start with a language and override specific fields:
+
+```yaml
+locale:
+  language: english
+  present: now            # Override just this field
+  month: mo
+  months: mos
+```
+
+Now ongoing positions show "now" instead of "present", and time spans show "3 yrs 6 mos".
+
+### Complete Custom Locale
+
+Create a fully custom locale:
+
+<Tabs>
+  <Tab title="Informal English">
+    ```yaml
+    locale:
+      language: english
+      last_updated: Updated
+      month: mo
+      months: mos
+      year: yr
+      years: yrs
+      present: now
+      month_abbreviations:
+        - Jan
+        - Feb
+        - Mar
+        - Apr
+        - May
+        - Jun
+        - Jul
+        - Aug
+        - Sep
+        - Oct
+        - Nov
+        - Dec
+    ```
+  </Tab>
+
+  <Tab title="Spanish">
+    ```yaml
+    locale:
+      language: spanish
+      last_updated: Última actualización en
+      month: mes
+      months: meses
+      year: año
+      years: años
+      present: presente
+      month_abbreviations:
+        - Ene
+        - Feb
+        - Mar
+        - Abr
+        - May
+        - Jun
+        - Jul
+        - Ago
+        - Sep
+        - Oct
+        - Nov
+        - Dic
+      month_names:
+        - Enero
+        - Febrero
+        - Marzo
+        - Abril
+        - Mayo
+        - Junio
+        - Julio
+        - Agosto
+        - Septiembre
+        - Octubre
+        - Noviembre
+        - Diciembre
+    ```
+  </Tab>
+
+  <Tab title="French">
+    ```yaml
+    locale:
+      language: french
+      last_updated: Dernière mise à jour en
+      month: mois
+      months: mois
+      year: an
+      years: ans
+      present: présent
+      month_abbreviations:
+        - Janv
+        - Févr
+        - Mars
+        - Avr
+        - Mai
+        - Juin
+        - Juil
+        - Août
+        - Sept
+        - Oct
+        - Nov
+        - Déc
+    ```
+  </Tab>
+
+  <Tab title="German">
+    ```yaml
+    locale:
+      language: german
+      last_updated: Zuletzt aktualisiert im
+      month: Monat
+      months: Monate
+      year: Jahr
+      years: Jahre
+      present: heute
+      month_abbreviations:
+        - Jan
+        - Feb
+        - März
+        - Apr
+        - Mai
+        - Juni
+        - Juli
+        - Aug
+        - Sept
+        - Okt
+        - Nov
+        - Dez
+      month_names:
+        - Januar
+        - Februar
+        - März
+        - April
+        - Mai
+        - Juni
+        - Juli
+        - August
+        - September
+        - Oktober
+        - November
+        - Dezember
+    ```
+  </Tab>
+</Tabs>
+
+## Phrases
+
+Some locales support custom phrases for combining text:
+
+```yaml
+locale:
+  language: english
+  phrases:
+    degree_with_area: DEGREE in AREA
+```
+
+This controls how education entries display degree and area:
+
+**Default:** PhD in Computer Science  
+**Custom:** PhD - Computer Science (if you set `degree_with_area: DEGREE - AREA`)
+
+## Complete Examples
+
+### Multilingual CV
+
+Create CVs in multiple languages by maintaining separate YAML files:
+
+<CodeGroup>
+```yaml John_Doe_EN.yaml
+cv:
+  name: John Doe
+  location: San Francisco, CA
+  sections:
+    experience:
+      - company: Tech Corp
+        position: Senior Engineer
+        start_date: 2020-01
+        end_date: present
+
+locale:
+  language: english
+```
+
+```yaml John_Doe_ES.yaml
+cv:
+  name: John Doe
+  location: San Francisco, CA
+  sections:
+    experience:
+      - company: Tech Corp
+        position: Ingeniero Senior
+        start_date: 2020-01
+        end_date: presente
+
+locale:
+  language: spanish
+```
+
+```yaml John_Doe_FR.yaml
+cv:
+  name: John Doe
+  location: San Francisco, CA
+  sections:
+    experience:
+      - company: Tech Corp
+        position: Ingénieur Principal
+        start_date: 2020-01
+        end_date: présent
+
+locale:
+  language: french
+```
+</CodeGroup>
+
+### Academic CV (German)
+
+```yaml
+cv:
+  name: Dr. Anna Müller
+  location: Berlin, Deutschland
+  email: a.mueller@uni-berlin.de
+  sections:
+    education:
+      - institution: Technische Universität Berlin
+        area: Informatik
+        degree: Dr. rer. nat.
+        start_date: 2015-10
+        end_date: 2019-09
+    
+    experience:
+      - company: Fraunhofer-Institut
+        position: Wissenschaftliche Mitarbeiterin
+        start_date: 2019-10
+        end_date: present
+
+locale:
+  language: german
+
+design:
+  theme: classic
+```
+
+### Tech Resume (Simplified English)
+
+```yaml
+cv:
+  name: Jane Smith
+  sections:
+    experience:
+      - company: StartupXYZ
+        position: Lead Engineer
+        start_date: 2021-01
+        end_date: present
+
+locale:
+  language: english
+  present: now
+  month: mo
+  months: mos
+  year: yr
+  years: yrs
+  month_abbreviations:
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - May
+    - Jun
+    - Jul
+    - Aug
+    - Sep
+    - Oct
+    - Nov
+    - Dec
+
+design:
+  theme: engineeringresumes
+```
+
+## Date Format Customization
+
+Control how dates appear using templates in the `design` section:
+
+```yaml
+design:
+  templates:
+    single_date: MONTH_ABBREVIATION YEAR          # "Jan 2020"
+    date_range: START_DATE – END_DATE             # "Jan 2020 – Dec 2023"
+    time_span: HOW_MANY_YEARS YEARS HOW_MANY_MONTHS MONTHS  # "3 years 6 months"
+```
+
+<Tabs>
+  <Tab title="Standard">
+    ```yaml
+    templates:
+      single_date: MONTH_ABBREVIATION YEAR
+      date_range: START_DATE – END_DATE
+    ```
+    Output: May 2020 – Aug 2023
+  </Tab>
+
+  <Tab title="Full Month Names">
+    ```yaml
+    templates:
+      single_date: MONTH_NAME YEAR
+      date_range: START_DATE – END_DATE
+    ```
+    Output: May 2020 – August 2023
+  </Tab>
+
+  <Tab title="Year Only">
+    ```yaml
+    templates:
+      single_date: YEAR
+      date_range: START_DATE – END_DATE
+    ```
+    Output: 2020 – 2023
+  </Tab>
+
+  <Tab title="Numeric">
+    ```yaml
+    templates:
+      single_date: MONTH_IN_TWO_DIGITS/YEAR
+      date_range: START_DATE – END_DATE
+    ```
+    Output: 05/2020 – 08/2023
+  </Tab>
+</Tabs>
+
+## Tips for Localization
+
+<AccordionGroup>
+  <Accordion title="Consistency">
+    - Use the same language throughout (content and locale)
+    - Ensure section titles match the locale language
+    - Translate all text, not just dates
+  </Accordion>
+
+  <Accordion title="Cultural Considerations">
+    - Different countries have different CV conventions
+    - Some regions prefer photos, others don't
+    - Date formats vary (MM/YYYY vs YYYY-MM)
+  </Accordion>
+
+  <Accordion title="Testing">
+    - Generate the CV and carefully review all dates
+    - Check that time spans display correctly
+    - Verify "present" appears as expected
+  </Accordion>
+
+  <Accordion title="Font Support">
+    For non-Latin scripts (Chinese, Japanese, Korean, Russian):
+    - Use fonts that support the character set
+    - Test that all characters render correctly
+    - Consider using Noto Sans or similar universal fonts
+  </Accordion>
+</AccordionGroup>
+
+## Locale Reference
+
+All available locale fields:
+
+| Field | Type | Description | Example |
+|-------|------|-------------|----------|
+| `language` | string | Built-in language to use | `english` |
+| `last_updated` | string | "Last updated" prefix | `Last updated in` |
+| `month` | string | Singular month | `month` |
+| `months` | string | Plural months | `months` |
+| `year` | string | Singular year | `year` |
+| `years` | string | Plural years | `years` |
+| `present` | string | For ongoing positions | `present` |
+| `month_abbreviations` | list | 12 short month names | `[Jan, Feb, ...]` |
+| `month_names` | list | 12 full month names | `[January, ...]` |
+| `phrases` | dict | Custom text combinations | See above |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="YAML Structure" icon="code" href="/guides/yaml-structure">
+    Learn about all YAML configuration options
+  </Card>
+  <Card title="Design Customization" icon="palette" href="/guides/design-customization">
+    Customize visual appearance
+  </Card>
+  <Card title="Custom Fonts" icon="font" href="/how-to/custom-fonts">
+    Add fonts for non-Latin scripts
+  </Card>
+  <Card title="Examples" icon="folder" href="/examples">
+    View complete CV examples
+  </Card>
+</CardGroup>

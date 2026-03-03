@@ -1,0 +1,209 @@
+---
+title: Use Custom Fonts
+description: Add custom TrueType and OpenType fonts to your CV by placing them in a fonts directory for automatic discovery by RenderCV
+---
+
+RenderCV automatically discovers custom fonts placed in a `fonts` directory next to your YAML input file. This allows you to use any font family beyond the built-in options.
+
+## Built-in Fonts
+
+RenderCV comes with several pre-installed fonts:
+
+<CardGroup cols={3}>
+  <Card title="Serif Fonts">
+    - Libertinus Serif
+    - New Computer Modern
+    - Gentium Book Plus
+    - EB Garamond
+    - XCharter
+  </Card>
+  <Card title="Sans-Serif Fonts">
+    - Source Sans 3
+    - Open Sans
+    - Noto Sans
+    - Lato
+    - Mukta
+    - Open Sauce Sans
+    - Roboto
+    - Ubuntu
+    - Poppins
+    - Raleway
+  </Card>
+  <Card title="Monospace Fonts">
+    - DejaVu Sans Mono
+    - Fontin
+  </Card>
+</CardGroup>
+
+## Adding Custom Fonts
+
+<Steps>
+  <Step title="Create a fonts directory">
+    Create a `fonts` directory in the same location as your YAML input file:
+
+    ```bash
+    mkdir fonts
+    ```
+
+    Your directory structure should look like:
+    ```
+    Your_Name_CV.yaml
+    fonts/
+      CustomFont-Regular.ttf
+      CustomFont-Bold.ttf
+      AnotherFont.otf
+    ```
+  </Step>
+
+  <Step title="Add font files">
+    Copy your custom font files (`.ttf` or `.otf`) into the `fonts` directory.
+
+    <Note>
+      RenderCV supports both TrueType Font (`.ttf`) and OpenType Font (`.otf`) formats.
+    </Note>
+  </Step>
+
+  <Step title="Specify the font in your YAML">
+    In your YAML file, specify the font family name in the design section:
+
+    ```yaml
+    design:
+      typography:
+        font_family: CustomFont
+    ```
+
+    <Tip>
+      Use the font family name exactly as defined in the font file's metadata. For most fonts, this is the name you see when you install the font on your system.
+    </Tip>
+  </Step>
+</Steps>
+
+## Example: Using Inter Font
+
+Here's a complete example of using the Inter font family:
+
+<Steps>
+  <Step title="Download Inter">
+    Download the Inter font from [Google Fonts](https://fonts.google.com/specimen/Inter) or the [official Inter repository](https://github.com/rsms/inter/releases).
+  </Step>
+
+  <Step title="Extract font files">
+    Copy the font files to your `fonts` directory:
+    ```
+    Your_Name_CV.yaml
+    fonts/
+      Inter-Regular.ttf
+      Inter-Bold.ttf
+      Inter-Italic.ttf
+      Inter-BoldItalic.ttf
+    ```
+  </Step>
+
+  <Step title="Update your YAML">
+    ```yaml
+    design:
+      theme: classic
+      typography:
+        font_family:
+          body: Inter
+          name: Inter
+          headline: Inter
+          connections: Inter
+          section_titles: Inter
+    ```
+  </Step>
+
+  <Step title="Render your CV">
+    ```bash
+    rendercv render Your_Name_CV.yaml
+    ```
+
+    RenderCV will automatically discover and use the Inter font files from the `fonts` directory.
+  </Step>
+</Steps>
+
+## Font Family Configuration
+
+You can specify different fonts for different parts of your CV:
+
+```yaml
+design:
+  typography:
+    font_family:
+      body: Source Sans 3          # Main text
+      name: Raleway                # Your name in the header
+      headline: Source Sans 3      # Headline/tagline
+      connections: Source Sans 3   # Contact information
+      section_titles: Raleway      # Section headings
+```
+
+Or use the same font for everything:
+
+```yaml
+design:
+  typography:
+    font_family: Source Sans 3
+```
+
+<Note>
+  When you specify a single font family as a string, it applies to all text elements (body, name, headline, connections, and section titles).
+</Note>
+
+## Supported Font Formats
+
+<CardGroup cols={2}>
+  <Card title="TrueType Font (.ttf)" icon="font">
+    The most common font format, widely supported and compatible.
+  </Card>
+  <Card title="OpenType Font (.otf)" icon="font">
+    Modern font format with advanced typographic features.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Font not appearing in rendered CV">
+    - Verify the font files are in the `fonts` directory next to your YAML file
+    - Check that the font family name in your YAML matches the font's actual name
+    - Ensure font files have the correct extensions (`.ttf` or `.otf`)
+    - Try using the exact font name as it appears when installed on your system
+  </Accordion>
+
+  <Accordion title="Bold or italic text not working">
+    Make sure you have the complete font family:
+    - `FontName-Regular.ttf` (or `.otf`)
+    - `FontName-Bold.ttf`
+    - `FontName-Italic.ttf`
+    - `FontName-BoldItalic.ttf`
+
+    Without these variants, RenderCV may not be able to render bold or italic text correctly.
+  </Accordion>
+
+  <Accordion title="Finding the font family name">
+    To find the exact font family name:
+    
+    **Windows:**
+    - Right-click the font file → Properties → Details tab → "Title" field
+
+    **macOS:**
+    - Double-click the font file → Font Book shows the "Family" name
+
+    **Linux:**
+    - Use `fc-query` command:
+      ```bash
+      fc-query --format='%{family}' FontName.ttf
+      ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Themes" icon="palette" href="/how-to/custom-themes">
+    Create a completely custom theme with your fonts
+  </Card>
+  <Card title="Design Reference" icon="book" href="/api/design-model">
+    Explore all typography options
+  </Card>
+</CardGroup>

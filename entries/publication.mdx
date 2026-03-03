@@ -1,0 +1,289 @@
+---
+title: Publication Entry
+description: Document your research papers, articles, and publications
+---
+
+Publication entries are used to showcase your research papers, academic publications, conference presentations, and journal articles in your CV.
+
+## Overview
+
+The `PublicationEntry` is designed specifically for academic and research publications. It displays the title, authors, journal/venue, and provides automatic DOI linking.
+
+## Fields
+
+### Required Fields
+
+<ParamField path="title" type="string" required>
+  The title of the publication.
+  
+  **Examples:**
+  - `"Deep Learning for Computer Vision"`
+  - `"Advances in Quantum Computing"`
+  - `"Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis"`
+</ParamField>
+
+<ParamField path="authors" type="list[string]" required>
+  List of authors. You can bold your name using `**double asterisks**` or `***triple asterisks***`.
+  
+  **Examples:**
+  ```yaml
+  authors:
+    - John Doe
+    - "**Jane Smith**"  # Bold format
+    - Bob Johnson
+  ```
+  
+  ```yaml
+  authors:
+    - J. Doe
+    - "***H. Tom***"    # Your name highlighted
+    - S. Doe
+  ```
+</ParamField>
+
+### Optional Fields
+
+<ParamField path="date" type="string">
+  The publication date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format, or custom text.
+  
+  **Examples:**
+  - `"2021-12-08"`
+  - `"2021-12"`
+  - `"2021"`
+  - `"Fall 2023"`
+</ParamField>
+
+<ParamField path="doi" type="string">
+  The DOI (Digital Object Identifier) of the publication. If provided, it will be used as the link instead of the URL.
+  
+  Must match the pattern: `10.*`
+  
+  **Examples:**
+  - `"10.48550/arXiv.2310.03138"`
+  - `"10.1109/TASC.2023.3340648"`
+  - `"10.1234/neurips.2023.1234"`
+</ParamField>
+
+<ParamField path="url" type="string">
+  A URL link to the publication. This is ignored if `doi` is provided.
+  
+  Must be a valid HTTP/HTTPS URL.
+  
+  **Example:**
+  ```yaml
+  url: https://arxiv.org/abs/2310.03138
+  ```
+</ParamField>
+
+<ParamField path="journal" type="string">
+  The journal, conference, or venue where the publication appeared.
+  
+  **Examples:**
+  - `"Nature"`
+  - `"IEEE Conference on Computer Vision"`
+  - `"arXiv preprint"`
+  - `"NeurIPS 2023"`
+  - `"IEEE Transactions on Applied Superconductivity"`
+</ParamField>
+
+<ParamField path="summary" type="string">
+  A brief description of the publication. Supports Markdown.
+  
+  **Example:**
+  ```yaml
+  summary: This paper presents a new method for computer vision.
+  ```
+</ParamField>
+
+## DOI Behavior
+
+<Note>
+  **Important:** When both `doi` and `url` are provided, the DOI takes priority and the `url` is ignored. The DOI is automatically converted to a URL using the format: `https://doi.org/{doi}`
+</Note>
+
+## Examples
+
+### Basic Publication Entry
+
+```yaml
+publications:
+  - title: Magneto-Thermal Thin Shell Approximation for 3D Finite
+      Element Analysis of No-Insulation Coils
+    authors:
+      - J. Doe
+      - "***H. Tom***"
+      - S. Doe
+      - A. Andsurname
+    date: "2021-12-08"
+    journal: IEEE Transactions on Applied Superconductivity
+    doi: 10.1109/TASC.2023.3340648
+```
+
+### Publication with Summary
+
+```yaml
+publications:
+  - title: Deep Learning for Computer Vision
+    authors:
+      - "**John Doe**"
+      - Jane Smith
+    date: "2023-07"
+    journal: Nature Machine Intelligence
+    doi: 10.1038/s42256-023-00123-4
+    summary: This paper presents a novel approach to computer vision using deep learning techniques.
+```
+
+### Conference Paper
+
+```yaml
+publications:
+  - title: 'Sparse Mixture-of-Experts at Scale: Efficient Routing for Trillion-Parameter Models'
+    authors:
+      - '*John Doe*'
+      - Sarah Williams
+      - David Park
+    doi: 10.1234/neurips.2023.1234
+    journal: NeurIPS 2023
+    date: 2023-07
+```
+
+### arXiv Preprint with URL
+
+```yaml
+publications:
+  - title: Advances in Quantum Computing
+    authors:
+      - Alice Johnson
+      - "**Bob Smith**"
+      - Carol White
+    date: 2024-01
+    journal: arXiv preprint
+    url: https://arxiv.org/abs/2401.12345
+```
+
+### Spotlight Paper
+
+```yaml
+publications:
+  - title: Neural Architecture Search via Differentiable Pruning
+    authors:
+      - James Liu
+      - '*John Doe*'
+    doi: 10.1234/neurips.2022.5678
+    journal: NeurIPS 2022, Spotlight
+    date: 2022-12
+```
+
+### Award-Winning Publication
+
+```yaml
+publications:
+  - title: On-Device Model Compression via Learned Quantization
+    authors:
+      - '*John Doe*'
+      - Kevin Wu
+    doi: 10.1234/iclr.2021.3456
+    journal: ICLR 2021, Best Paper Award
+    date: 2021-05
+```
+
+### Multiple Publications
+
+```yaml
+publications:
+  - title: 'Sparse Mixture-of-Experts at Scale: Efficient Routing for Trillion-Parameter Models'
+    authors:
+      - '*John Doe*'
+      - Sarah Williams
+      - David Park
+    doi: 10.1234/neurips.2023.1234
+    journal: NeurIPS 2023
+    date: 2023-07
+  
+  - title: Neural Architecture Search via Differentiable Pruning
+    authors:
+      - James Liu
+      - '*John Doe*'
+    doi: 10.1234/neurips.2022.5678
+    journal: NeurIPS 2022, Spotlight
+    date: 2022-12
+  
+  - title: Multi-Agent Reinforcement Learning with Emergent Communication
+    authors:
+      - Maria Garcia
+      - '*John Doe*'
+      - Tom Anderson
+    doi: 10.1234/icml.2022.9012
+    journal: ICML 2022
+    date: 2022-07
+```
+
+## Author Name Formatting
+
+You can format your name in the author list to make it stand out:
+
+<CodeGroup>
+
+```yaml Bold with double asterisks
+authors:
+  - "**John Doe**"
+  - Jane Smith
+  - Bob Johnson
+```
+
+```yaml Bold with triple asterisks
+authors:
+  - "***John Doe***"
+  - Jane Smith
+  - Bob Johnson
+```
+
+```yaml Single asterisks (italic)
+authors:
+  - "*John Doe*"
+  - Jane Smith
+  - Bob Johnson
+```
+
+</CodeGroup>
+
+## Tips
+
+<Tip>
+  **Using DOIs effectively:**
+  - Always use DOI when available - it's the canonical identifier
+  - DOIs are stable and won't break like URLs might
+  - RenderCV automatically generates the correct DOI URL
+  - The DOI format is automatically validated (must start with `10.`)
+</Tip>
+
+<Tip>
+  **Author formatting:**
+  - Use `**Your Name**` or `***Your Name***` to highlight your authorship
+  - Keep author names consistent across publications
+  - Use full names or initialize consistently (e.g., "J. Doe" vs "John Doe")
+  - Quote strings with asterisks to prevent YAML parsing issues
+</Tip>
+
+<Tip>
+  **Journal/venue information:**
+  - Include the year for conferences (e.g., "NeurIPS 2023")
+  - Add special designations like "Spotlight" or "Best Paper Award"
+  - For arXiv papers, use "arXiv preprint" as the journal
+</Tip>
+
+<Warning>
+  **Date format:**
+  Unlike Education and Experience entries, Publication entries use a single `date` field, not `start_date` and `end_date`. Use the publication or acceptance date.
+</Warning>
+
+## Related Entry Types
+
+<CardGroup cols={2}>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    For projects and presentations
+  </Card>
+  <Card title="Numbered Entry" icon="list-ol">
+    For simple numbered publication lists
+  </Card>
+</CardGroup>

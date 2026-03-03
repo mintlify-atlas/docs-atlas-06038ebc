@@ -1,0 +1,634 @@
+---
+title: "CV Model"
+description: "Complete reference for the CV data model structure, fields, and entry types"
+---
+
+## Overview
+
+The `Cv` model represents the content of your CV, including personal information, contact details, and sections with entries. It inherits from `BaseModelWithoutExtraKeys` to enforce strict validation.
+
+## Cv Model Structure
+
+```python
+class Cv(BaseModelWithoutExtraKeys):
+    name: str | None
+    headline: str | None
+    location: str | None
+    email: pydantic.EmailStr | list[pydantic.EmailStr] | None
+    photo: ExistingPathRelativeToInput | pydantic.HttpUrl | None
+    phone: pydantic_phone_numbers.PhoneNumber | list[...] | None
+    website: pydantic.HttpUrl | list[pydantic.HttpUrl] | None
+    social_networks: list[SocialNetwork] | None
+    custom_connections: list[CustomConnection] | None
+    sections: dict[str, Section] | None
+```
+
+**Location:** `src/rendercv/schema/models/cv/cv.py:31`
+
+## Header Fields
+
+### name
+
+<ResponseField name="name" type="str | None">
+  Your full name displayed prominently in the header.
+  
+  **Examples:**
+  - `"John Doe"`
+  - `"Jane Smith"`
+</ResponseField>
+
+### headline
+
+<ResponseField name="headline" type="str | None">
+  Professional headline or title displayed below your name.
+  
+  **Examples:**
+  - `"Software Engineer"`
+  - `"Data Scientist"`
+  - `"Product Manager"`
+</ResponseField>
+
+### location
+
+<ResponseField name="location" type="str | None">
+  Your current location or city.
+  
+  **Examples:**
+  - `"New York, NY"`
+  - `"London, UK"`
+  - `"Istanbul, Türkiye"`
+</ResponseField>
+
+## Contact Information
+
+### email
+
+<ResponseField name="email" type="EmailStr | list[EmailStr] | None">
+  Email address(es). Validated to ensure proper email format. You can provide a single email or a list of emails.
+  
+  **Examples:**
+  ```yaml
+  email: john.doe@example.com
+  ```
+  
+  ```yaml
+  email:
+    - john.doe.1@example.com
+    - john.doe.2@example.com
+  ```
+</ResponseField>
+
+### phone
+
+<ResponseField name="phone" type="PhoneNumber | list[PhoneNumber] | None">
+  Phone number(s) with country code in international format (e.g., +1 for USA, +44 for UK). The display format is controlled by `design.header.connections.phone_number_format`. You can provide a single number or a list.
+  
+  **Examples:**
+  ```yaml
+  phone: "+1-234-567-8900"
+  ```
+  
+  ```yaml
+  phone:
+    - "+1-234-567-8900"
+    - "+44 20 1234 5678"
+  ```
+</ResponseField>
+
+### website
+
+<ResponseField name="website" type="HttpUrl | list[HttpUrl] | None">
+  Personal website URL(s). Validated to ensure proper URL format. You can provide a single URL or a list.
+  
+  **Examples:**
+  ```yaml
+  website: https://johndoe.com
+  ```
+  
+  ```yaml
+  website:
+    - https://johndoe.com
+    - https://www.janesmith.dev
+  ```
+</ResponseField>
+
+### photo
+
+<ResponseField name="photo" type="Path | HttpUrl | None">
+  Profile photo as a local file path (relative to the YAML file) or a URL. RenderCV automatically downloads photos from URLs.
+  
+  **Examples:**
+  ```yaml
+  photo: photo.jpg
+  ```
+  
+  ```yaml
+  photo: images/profile.png
+  ```
+  
+  ```yaml
+  photo: https://example.com/photo.jpg
+  ```
+</ResponseField>
+
+## Social Networks
+
+### social_networks
+
+<ResponseField name="social_networks" type="list[SocialNetwork] | None">
+  List of social network profiles. RenderCV supports common platforms with automatic icon and URL formatting.
+  
+  **Supported platforms:**
+  - LinkedIn
+  - GitHub
+  - GitLab
+  - Instagram
+  - Orcid
+  - Twitter/X
+  - Mastodon
+  - YouTube
+  
+  **Example:**
+  ```yaml
+  social_networks:
+    - network: LinkedIn
+      username: johndoe
+    - network: GitHub
+      username: johndoe
+  ```
+</ResponseField>
+
+### custom_connections
+
+<ResponseField name="custom_connections" type="list[CustomConnection] | None">
+  Additional header connections you define yourself. Each item has a `placeholder` (displayed text), an optional `url`, and a Font Awesome icon name.
+  
+  **Example:**
+  ```yaml
+  custom_connections:
+    - placeholder: Book a call
+      url: https://cal.com/johndoe
+      fontawesome_icon: calendar-days
+  ```
+  
+  Find icons at [Font Awesome](https://fontawesome.com/search).
+</ResponseField>
+
+## Sections
+
+### sections
+
+<ResponseField name="sections" type="dict[str, Section] | None">
+  The main content sections of your CV. Keys are section titles (e.g., "Experience", "Education"), and values are lists of entries. Entry types are automatically detected based on their fields.
+  
+  **Example:**
+  ```yaml
+  sections:
+    Experience:
+      - company: Google
+        position: Software Engineer
+        start_date: 2020-01
+        end_date: present
+        location: Mountain View, CA
+        highlights:
+          - Developed features for Google Search
+          - Led team of 5 engineers
+    
+    Education:
+      - institution: MIT
+        area: Computer Science
+        degree: BS
+        start_date: 2016-09
+        end_date: 2020-05
+        location: Cambridge, MA
+  ```
+</ResponseField>
+
+## Entry Types
+
+RenderCV supports multiple entry types, automatically detected based on their fields:
+
+### ExperienceEntry
+
+For work experience and professional positions.
+
+<ResponseField name="company" type="str" required>
+  Company or organization name.
+  
+  **Examples:** `"Microsoft"`, `"Google"`, `"Princeton Plasma Physics Laboratory"`
+</ResponseField>
+
+<ResponseField name="position" type="str" required>
+  Job title or position.
+  
+  **Examples:** `"Software Engineer"`, `"Research Assistant"`, `"Project Manager"`
+</ResponseField>
+
+<ResponseField name="location" type="str">
+  Office location or city.
+</ResponseField>
+
+<ResponseField name="start_date" type="date">
+  Start date in YYYY-MM-DD, YYYY-MM, or YYYY format.
+</ResponseField>
+
+<ResponseField name="end_date" type="date | 'present'">
+  End date or `"present"` for current positions.
+</ResponseField>
+
+<ResponseField name="summary" type="str">
+  Brief summary or description paragraph.
+</ResponseField>
+
+<ResponseField name="highlights" type="list[str]">
+  Bullet points highlighting achievements.
+</ResponseField>
+
+**Location:** `src/rendercv/schema/models/cv/entries/experience.py:7`
+
+**Example:**
+```yaml
+- company: Microsoft
+  position: Senior Software Engineer
+  location: Redmond, WA
+  start_date: 2018-03
+  end_date: present
+  summary: Lead development of cloud infrastructure services.
+  highlights:
+    - Reduced deployment time by 60% through automation
+    - Mentored 8 junior engineers
+    - Architected microservices platform serving 10M+ users
+```
+
+### EducationEntry
+
+For academic credentials and degrees.
+
+<ResponseField name="institution" type="str" required>
+  University or school name.
+  
+  **Examples:** `"Boğaziçi University"`, `"MIT"`, `"Harvard University"`
+</ResponseField>
+
+<ResponseField name="area" type="str" required>
+  Field of study or major.
+  
+  **Examples:** `"Mechanical Engineering"`, `"Computer Science"`, `"Electrical Engineering"`
+</ResponseField>
+
+<ResponseField name="degree" type="str">
+  Degree type.
+  
+  **Examples:** `"BS"`, `"BA"`, `"PhD"`, `"MS"`
+</ResponseField>
+
+<ResponseField name="location" type="str">
+  Campus location.
+</ResponseField>
+
+<ResponseField name="start_date" type="date">
+  Start date.
+</ResponseField>
+
+<ResponseField name="end_date" type="date">
+  Graduation date.
+</ResponseField>
+
+<ResponseField name="summary" type="str">
+  Additional details about your education.
+</ResponseField>
+
+<ResponseField name="highlights" type="list[str]">
+  Notable achievements or coursework.
+</ResponseField>
+
+**Location:** `src/rendercv/schema/models/cv/entries/education.py:7`
+
+**Example:**
+```yaml
+- institution: Stanford University
+  area: Computer Science
+  degree: PhD
+  location: Stanford, CA
+  start_date: 2020-09
+  end_date: 2024-06
+  summary: Dissertation on machine learning for robotics.
+  highlights:
+    - GPA: 3.95/4.0
+    - Published 5 papers in top-tier conferences
+    - Teaching assistant for AI course
+```
+
+### PublicationEntry
+
+For research papers, articles, and publications.
+
+<ResponseField name="title" type="str" required>
+  Publication title.
+</ResponseField>
+
+<ResponseField name="authors" type="list[str]" required>
+  List of authors.
+</ResponseField>
+
+<ResponseField name="journal" type="str">
+  Journal, conference, or venue name.
+</ResponseField>
+
+<ResponseField name="doi" type="str">
+  Digital Object Identifier.
+</ResponseField>
+
+<ResponseField name="url" type="str">
+  Publication URL (used if DOI not provided).
+</ResponseField>
+
+<ResponseField name="date" type="date">
+  Publication date.
+</ResponseField>
+
+<ResponseField name="summary" type="str">
+  Abstract or summary.
+</ResponseField>
+
+**Example:**
+```yaml
+- title: Deep Learning for Autonomous Vehicles
+  authors:
+    - John Doe
+    - Jane Smith
+  journal: IEEE Transactions on Robotics
+  doi: 10.1109/TRO.2023.123456
+  date: 2023-06
+  summary: Novel approach to object detection in self-driving cars.
+```
+
+### NormalEntry
+
+General-purpose entry for projects, awards, certifications, etc.
+
+<ResponseField name="name" type="str" required>
+  Entry name or title.
+</ResponseField>
+
+<ResponseField name="location" type="str">
+  Location.
+</ResponseField>
+
+<ResponseField name="date" type="date">
+  Date or date range.
+</ResponseField>
+
+<ResponseField name="summary" type="str">
+  Description paragraph.
+</ResponseField>
+
+<ResponseField name="highlights" type="list[str]">
+  Bullet points.
+</ResponseField>
+
+**Example:**
+```yaml
+- name: Best Paper Award
+  location: ICML 2023
+  date: 2023-07
+  summary: Recognized for outstanding research contribution.
+```
+
+### OneLineEntry
+
+Compact entry for skills, languages, etc.
+
+<ResponseField name="label" type="str" required>
+  Label text.
+</ResponseField>
+
+<ResponseField name="details" type="str" required>
+  Details text.
+</ResponseField>
+
+**Example:**
+```yaml
+- label: Languages
+  details: English (native), Spanish (fluent), French (intermediate)
+- label: Programming
+  details: Python, Java, C++, JavaScript
+```
+
+### BulletEntry
+
+Simple bullet point (plain string).
+
+**Example:**
+```yaml
+- AWS Certified Solutions Architect
+- Scrum Master Certification
+- First Aid/CPR Certified
+```
+
+### TextEntry
+
+Plain text paragraph (plain string).
+
+**Example:**
+```yaml
+- "Passionate software engineer with 10+ years of experience building scalable web applications."
+```
+
+### NumberedEntry / ReversedNumberedEntry
+
+Automatically numbered lists.
+
+**Example:**
+```yaml
+Top Publications:
+  - First publication title
+  - Second publication title
+  - Third publication title
+```
+
+## Entry Type Detection
+
+RenderCV automatically detects entry types based on characteristic fields:
+
+```python
+characteristic_entry_fields = {
+    ExperienceEntry: {"company", "position"},
+    EducationEntry: {"institution", "area", "degree"},
+    PublicationEntry: {"title", "authors", "doi", "journal"},
+    NormalEntry: {"name"},
+    OneLineEntry: {"label", "details"},
+    # ...
+}
+```
+
+**Location:** `src/rendercv/schema/models/cv/section.py:77`
+
+**How it works:**
+1. If entry has `company` and `position` → ExperienceEntry
+2. If entry has `institution` and `area` → EducationEntry
+3. If entry has `title` and `authors` → PublicationEntry
+4. If entry is a plain string → TextEntry
+5. Otherwise → NormalEntry
+
+## Custom Fields
+
+All entry types accept custom fields for use in templates:
+
+```yaml
+Experience:
+  - company: Google
+    position: Software Engineer
+    start_date: 2020-01
+    end_date: present
+    # Custom fields
+    team_size: "15 engineers"
+    tech_stack: "Python, Kubernetes, GCP"
+    performance_rating: "Exceeds expectations"
+```
+
+Use custom fields in templates as UPPERCASE placeholders:
+```typst
+**COMPANY**, POSITION
+Team: TEAM_SIZE | Stack: TECH_STACK
+```
+
+## Field Order Preservation
+
+The CV model preserves the order of header fields as defined in YAML:
+
+```python
+@pydantic.model_validator(mode="wrap")
+@classmethod
+def capture_input_order(
+    cls, data: Any, handler: pydantic.ModelWrapValidatorHandler[Self]
+) -> "Cv":
+    """Preserve YAML field order for header rendering."""
+    key_order = list(data.keys()) if isinstance(data, dict) else []
+    instance = handler(data)
+    instance._key_order = [key for key in key_order if data.get(key) is not None]
+    return instance
+```
+
+**Location:** `src/rendercv/schema/models/cv/cv.py:142`
+
+This ensures header fields render in the order you define them in your YAML file.
+
+## Complete Example
+
+<CodeGroup>
+```yaml Full CV Structure
+cv:
+  name: John Doe
+  headline: Senior Software Engineer
+  location: San Francisco, CA
+  email: john.doe@example.com
+  phone: "+1-555-123-4567"
+  website: https://johndoe.dev
+  photo: profile.jpg
+  social_networks:
+    - network: LinkedIn
+      username: johndoe
+    - network: GitHub
+      username: johndoe
+  custom_connections:
+    - placeholder: Portfolio
+      url: https://portfolio.johndoe.dev
+      fontawesome_icon: briefcase
+  
+  sections:
+    Summary:
+      - "Passionate software engineer with 10+ years of experience building scalable distributed systems."
+    
+    Experience:
+      - company: Google
+        position: Senior Software Engineer
+        location: Mountain View, CA
+        start_date: 2018-06
+        end_date: present
+        summary: Lead backend development for Google Cloud Platform.
+        highlights:
+          - Architected microservices platform serving 50M+ requests/day
+          - Reduced infrastructure costs by 40% through optimization
+          - Mentored team of 8 engineers
+      
+      - company: Microsoft
+        position: Software Engineer
+        location: Redmond, WA
+        start_date: 2015-07
+        end_date: 2018-05
+        highlights:
+          - Developed Azure Functions runtime
+          - Improved cold start performance by 300%
+    
+    Education:
+      - institution: MIT
+        area: Computer Science
+        degree: MS
+        location: Cambridge, MA
+        start_date: 2013-09
+        end_date: 2015-05
+        highlights:
+          - GPA: 3.9/4.0
+          - Teaching Assistant for Distributed Systems course
+      
+      - institution: UC Berkeley
+        area: Computer Science
+        degree: BS
+        start_date: 2009-09
+        end_date: 2013-05
+    
+    Publications:
+      - title: Scalable Distributed Training for Deep Learning
+        authors:
+          - John Doe
+          - Jane Smith
+        journal: NeurIPS 2022
+        doi: 10.1234/neurips.2022.12345
+        date: 2022-12
+    
+    Skills:
+      - label: Programming Languages
+        details: Python, Go, Java, C++, JavaScript
+      - label: Technologies
+        details: Kubernetes, Docker, AWS, GCP, Terraform
+      - label: Languages
+        details: English (native), Spanish (fluent)
+```
+
+```yaml Minimal CV
+cv:
+  name: Jane Smith
+  email: jane@example.com
+  
+  sections:
+    Experience:
+      - company: Startup Inc.
+        position: Founder
+        start_date: 2020
+        end_date: present
+    
+    Education:
+      - institution: Stanford
+        area: Business
+        degree: MBA
+        end_date: 2020
+```
+</CodeGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Design Model" icon="palette" href="/api/design-model">
+    Customize CV appearance
+  </Card>
+  <Card title="Locale Model" icon="language" href="/api/locale-model">
+    Internationalization options
+  </Card>
+  <Card title="Templater" icon="code" href="/api/templater">
+    How entries are rendered
+  </Card>
+  <Card title="Data Models" icon="database" href="/api/data-models">
+    Overall architecture
+  </Card>
+</CardGroup>

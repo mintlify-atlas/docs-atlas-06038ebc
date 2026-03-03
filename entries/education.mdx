@@ -1,0 +1,233 @@
+---
+title: Education Entry
+description: Document your academic background with education entries
+---
+
+Education entries are used to showcase your academic degrees, certifications, and educational background in your CV.
+
+## Overview
+
+The `EducationEntry` is designed specifically for academic credentials. It prominently displays the institution, degree, and field of study, along with dates, location, and achievements.
+
+## Fields
+
+### Required Fields
+
+<ParamField path="institution" type="string" required>
+  The name of the educational institution.
+  
+  **Examples:**
+  - `"Boğaziçi University"`
+  - `"MIT"`
+  - `"Harvard University"`
+</ParamField>
+
+<ParamField path="area" type="string" required>
+  The field of study or major.
+  
+  **Examples:**
+  - `"Mechanical Engineering"`
+  - `"Computer Science"`
+  - `"Electrical Engineering"`
+</ParamField>
+
+### Optional Fields
+
+<ParamField path="degree" type="string">
+  The degree obtained or pursued.
+  
+  **Examples:**
+  - `"BS"` - Bachelor of Science
+  - `"BA"` - Bachelor of Arts
+  - `"PhD"` - Doctor of Philosophy
+  - `"MS"` - Master of Science
+</ParamField>
+
+<ParamField path="start_date" type="string">
+  The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
+  
+  **Examples:**
+  - `"2020-09-24"`
+  - `"2020-09"`
+  - `"2020"`
+</ParamField>
+
+<ParamField path="end_date" type="string">
+  The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. Use `"present"` for ongoing education.
+  
+  **Examples:**
+  - `"2024-05-20"`
+  - `"2024-05"`
+  - `"2024"`
+  - `"present"`
+</ParamField>
+
+<ParamField path="date" type="string">
+  Single date for events without a range. Supports `YYYY-MM-DD`, `YYYY-MM`, `YYYY`, or custom text like `"Fall 2023"`.
+  
+  Use this instead of `start_date` and `end_date` for single-day events or imprecise dates.
+  
+  **Examples:**
+  - `"2020-09-24"`
+  - `"2020"`
+  - `"Fall 2023"`
+  - `"Summer 2020"`
+</ParamField>
+
+<ParamField path="location" type="string">
+  The location of the institution.
+  
+  **Examples:**
+  - `"Istanbul, Türkiye"`
+  - `"New York, NY"`
+  - `"Remote"`
+</ParamField>
+
+<ParamField path="summary" type="string">
+  A brief description or overview of your education. Supports Markdown.
+  
+  **Example:**
+  ```yaml
+  summary: Completed advanced coursework in machine learning and artificial intelligence.
+  ```
+</ParamField>
+
+<ParamField path="highlights" type="list[string]">
+  A list of bullet points highlighting key achievements, coursework, awards, or activities. Supports Markdown.
+  
+  **Examples:**
+  ```yaml
+  highlights:
+    - "GPA: 3.97/4.00, Valedictorian"
+    - "Fulbright Scholarship recipient for Graduate Studies"
+    - "Dean's Honor List, Sportsperson of the Year"
+  ```
+</ParamField>
+
+## Date Behavior
+
+<Note>
+  **Important:** Date fields have special behavior:
+  - If only `start_date` is provided, `end_date` defaults to `"present"`
+  - If only `end_date` is provided, it's treated as a single `date`
+  - If `date` is provided, `start_date` and `end_date` are ignored
+</Note>
+
+## Examples
+
+### Basic Education Entry
+
+```yaml
+education:
+  - institution: Boğaziçi University
+    area: Mechanical Engineering
+    degree: BS
+    start_date: 2015-09
+    end_date: 2020-06
+    location: Istanbul, Turkey
+```
+
+### Education with Highlights
+
+```yaml
+education:
+  - institution: Boğaziçi University
+    area: Mechanical Engineering
+    degree: BS
+    start_date: 2015-09
+    end_date: 2020-06
+    location: Istanbul, Turkey
+    highlights:
+      - "GPA: 3.24/4.00 ([Transcript](https://example.com))"
+      - "Awards: Dean's Honor List, Sportsperson of the Year"
+```
+
+### PhD with Thesis Information
+
+```yaml
+education:
+  - institution: Princeton University
+    area: Computer Science
+    degree: PhD
+    start_date: 2018-09
+    end_date: 2023-05
+    location: Princeton, NJ
+    highlights:
+      - 'Thesis: Efficient Neural Architecture Search for Resource-Constrained Deployment'
+      - 'Advisor: Prof. Sanjeev Arora'
+      - NSF Graduate Research Fellowship, Siebel Scholar (Class of 2022)
+```
+
+### Bachelor's Degree with Honors
+
+```yaml
+education:
+  - institution: Boğaziçi University
+    area: Computer Engineering
+    degree: BS
+    start_date: 2014-09
+    end_date: 2018-06
+    location: Istanbul, Türkiye
+    highlights:
+      - 'GPA: 3.97/4.00, Valedictorian'
+      - Fulbright Scholarship recipient for Graduate Studies
+```
+
+### Ongoing Education
+
+```yaml
+education:
+  - institution: Stanford University
+    area: Artificial Intelligence
+    degree: MS
+    start_date: 2023-09
+    end_date: present
+    location: Stanford, CA
+```
+
+## Markdown Support
+
+All text fields support Markdown formatting:
+
+```yaml
+education:
+  - institution: MIT
+    area: Computer Science
+    degree: BS
+    start_date: 2018-09
+    end_date: 2022-05
+    location: Cambridge, MA
+    highlights:
+      - "GPA: **3.95**/4.00"
+      - "Relevant coursework: *Machine Learning*, *Computer Vision*, *NLP*"
+      - "[Research publication](https://example.com) on neural networks"
+```
+
+## Tips
+
+<Tip>
+  **Use highlights effectively:**
+  - Start with your GPA if it's strong (3.5+)
+  - Include relevant coursework for early-career CVs
+  - Mention scholarships, fellowships, and awards
+  - Add thesis title and advisor for graduate degrees
+  - Use Markdown links for transcripts or thesis papers
+</Tip>
+
+<Tip>
+  **Date formatting:**
+  - Use `YYYY-MM` format (e.g., `2020-09`) for academic dates
+  - Always use `"present"` for ongoing education, not "current" or other terms
+  - RenderCV will automatically calculate and display the duration
+</Tip>
+
+## Related Entry Types
+
+<CardGroup cols={2}>
+  <Card title="Experience Entry" icon="briefcase" href="/entries/experience">
+    For work experience and internships
+  </Card>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    For certifications and courses
+  </Card>
+</CardGroup>

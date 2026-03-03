@@ -1,0 +1,283 @@
+---
+title: One Line Entry
+description: Display compact key-value information like skills and languages
+---
+
+One Line entries are perfect for displaying compact key-value pairs of information. They're commonly used for skills, languages, citizenships, security clearances, and other brief information that doesn't need dates or elaborate descriptions.
+
+## Overview
+
+The `OneLineEntry` displays information in a simple label-details format, making it ideal for skills sections and other compact information. Each entry appears on a single line with the label followed by the details.
+
+## Fields
+
+<ParamField path="label" type="string" required>
+  The label or category name.
+  
+  **Examples:**
+  - `"Languages"`
+  - `"Citizenship"`
+  - `"Security Clearance"`
+  - `"Programming"`
+  - `"ML Frameworks"`
+</ParamField>
+
+<ParamField path="details" type="string" required>
+  The details or values associated with the label.
+  
+  **Examples:**
+  - `"English (native), Spanish (fluent)"`
+  - `"US Citizen"`
+  - `"Top Secret"`
+  - `"Python, C++, JavaScript, MATLAB"`
+  - `"PyTorch, JAX, TensorFlow, Triton, ONNX"`
+</ParamField>
+
+## Examples
+
+### Basic One Line Entry
+
+```yaml
+skills:
+  - label: Programming
+    details: Python, C++, JavaScript, MATLAB
+```
+
+### Multiple Skills
+
+```yaml
+skills:
+  - label: Languages
+    details: Python, C++, CUDA, Rust, Julia
+  - label: ML Frameworks
+    details: PyTorch, JAX, TensorFlow, Triton, ONNX
+  - label: Infrastructure
+    details: Kubernetes, Ray, distributed training, AWS, GCP
+  - label: Research Areas
+    details: Neural architecture search, model compression, efficient inference, multi-agent RL
+```
+
+### Language Proficiency
+
+```yaml
+languages:
+  - label: Languages
+    details: English (native), Spanish (fluent)
+```
+
+### Personal Information
+
+```yaml
+personal:
+  - label: Citizenship
+    details: US Citizen
+  - label: Security Clearance
+    details: Top Secret
+```
+
+### Technical Skills by Category
+
+```yaml
+technical_skills:
+  - label: Frontend
+    details: React, Vue.js, TypeScript, Tailwind CSS
+  - label: Backend
+    details: Node.js, Python, Go, PostgreSQL, Redis
+  - label: DevOps
+    details: Docker, Kubernetes, GitHub Actions, Terraform
+  - label: Cloud
+    details: AWS (EC2, S3, Lambda), Google Cloud Platform, Azure
+```
+
+### Certifications
+
+```yaml
+certifications:
+  - label: AWS
+    details: Solutions Architect Professional, Developer Associate
+  - label: Google Cloud
+    details: Professional Cloud Developer
+  - label: Kubernetes
+    details: Certified Kubernetes Administrator (CKA)
+```
+
+### Research Areas
+
+```yaml
+research:
+  - label: Areas of Interest
+    details: Machine learning, computer vision, natural language processing, reinforcement learning
+  - label: Tools
+    details: Python, PyTorch, TensorFlow, scikit-learn, pandas
+```
+
+## Markdown Support
+
+Both `label` and `details` fields support Markdown formatting:
+
+```yaml
+skills:
+  - label: "**Programming Languages**"
+    details: "*Python*, *C++*, JavaScript, MATLAB"
+  - label: "**Frameworks**"
+    details: "[PyTorch](https://pytorch.org), [TensorFlow](https://tensorflow.org), JAX"
+```
+
+## Tips
+
+<Tip>
+  **Organizing skills:**
+  - Group related skills together by category
+  - Put most relevant/strongest skills first
+  - List items from most to least proficient
+  - Keep details concise - aim for one line per entry
+</Tip>
+
+<Tip>
+  **Label naming:**
+  - Use clear, descriptive labels
+  - Be consistent with capitalization
+  - Common labels: Languages, Frameworks, Tools, Cloud, DevOps, Databases
+  - Avoid generic labels like "Skills" - be specific
+</Tip>
+
+<Tip>
+  **Details formatting:**
+  - Separate items with commas
+  - For language proficiency, include level: "English (native), Spanish (fluent), French (intermediate)"
+  - Order by importance or proficiency
+  - Don't overload - if you have many items, split into multiple entries
+</Tip>
+
+<Warning>
+  **Avoid overuse:**
+  One Line entries work best for simple lists. If you need to describe skills in detail with examples or achievements, consider using a Normal Entry or Bullet Entry instead.
+</Warning>
+
+## Use Cases
+
+### Skills Section
+
+The most common use case is for technical skills:
+
+```yaml
+skills:
+  - label: Languages
+    details: Python, JavaScript, TypeScript, Go, Rust
+  - label: Frontend
+    details: React, Next.js, Vue.js, Svelte
+  - label: Backend
+    details: Node.js, Django, FastAPI, Express
+  - label: Databases
+    details: PostgreSQL, MongoDB, Redis, Elasticsearch
+  - label: DevOps
+    details: Docker, Kubernetes, CI/CD, Terraform
+```
+
+### Language Proficiency
+
+```yaml
+languages:
+  - label: Languages
+    details: English (native), Mandarin (fluent), Japanese (conversational)
+```
+
+### Clearances and Certifications
+
+```yaml
+clearances:
+  - label: Security Clearance
+    details: Top Secret/SCI with Polygraph
+  - label: Citizenship
+    details: United States
+```
+
+## Comparison with Other Entry Types
+
+<Tabs>
+  <Tab title="One Line Entry">
+    **Best for:** Simple key-value pairs
+    
+    ```yaml
+    skills:
+      - label: Programming
+        details: Python, C++, JavaScript
+    ```
+    
+    Renders as: **Programming:** Python, C++, JavaScript
+  </Tab>
+  
+  <Tab title="Bullet Entry">
+    **Best for:** Simple lists without labels
+    
+    ```yaml
+    skills:
+      - bullet: Python, C++, JavaScript
+      - bullet: React, Vue.js, Angular
+    ```
+    
+    Renders as:
+    - Python, C++, JavaScript
+    - React, Vue.js, Angular
+  </Tab>
+  
+  <Tab title="Normal Entry">
+    **Best for:** Detailed descriptions with highlights
+    
+    ```yaml
+    skills:
+      - name: Programming Languages
+        highlights:
+          - "Expert in **Python** (5 years)"
+          - "Proficient in **C++** and **JavaScript**"
+    ```
+    
+    Renders with full formatting and bullets
+  </Tab>
+</Tabs>
+
+## Common Patterns
+
+### Full Skills Section
+
+```yaml
+cv:
+  sections:
+    skills:
+      - label: Languages
+        details: Python, C++, CUDA, Rust, Julia
+      - label: ML Frameworks
+        details: PyTorch, JAX, TensorFlow, Triton, ONNX
+      - label: Infrastructure
+        details: Kubernetes, Ray, distributed training, AWS, GCP
+      - label: Research Areas
+        details: Neural architecture search, model compression, efficient inference, multi-agent RL
+```
+
+### Mixed Section (One Line + Bullet)
+
+You can mix entry types in the same section:
+
+```yaml
+skills:
+  - label: Programming Languages
+    details: Python, JavaScript, Go, Rust
+  - label: Spoken Languages
+    details: English (native), Spanish (fluent)
+  - bullet: Strong communication and leadership skills
+  - bullet: Experience with Agile methodologies
+```
+
+## Related Entry Types
+
+<CardGroup cols={3}>
+  <Card title="Bullet Entry" icon="circle-dot" href="/entries/bullet">
+    For simple bulleted lists
+  </Card>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    For items needing more detail
+  </Card>
+  <Card title="Overview" icon="book" href="/entries/overview">
+    See all entry types
+  </Card>
+</CardGroup>

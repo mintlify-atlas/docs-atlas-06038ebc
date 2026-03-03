@@ -1,0 +1,269 @@
+---
+title: Bullet Entry
+description: Create simple bulleted lists for honors, awards, and achievements
+---
+
+Bullet entries create simple bulleted lists without dates, locations, or complex formatting. They're perfect for honors, awards, skills, or any list of items that don't need additional context.
+
+## Overview
+
+The `BulletEntry` is the simplest entry type in RenderCV. It displays a single line of text with a bullet point, making it ideal for clean, uncluttered lists.
+
+## Fields
+
+<ParamField path="bullet" type="string" required>
+  The text to display as a bullet point. Supports Markdown.
+  
+  **Examples:**
+  - `"Python, JavaScript, C++"`
+  - `"Excellent communication skills"`
+  - `"This is a bullet entry."`
+  - `"MIT Technology Review 35 Under 35 Innovators (2024)"`
+</ParamField>
+
+## Examples
+
+### Basic Bullet Entry
+
+```yaml
+skills:
+  - bullet: This is a bullet entry.
+```
+
+### Multiple Bullets
+
+```yaml
+selected_honors:
+  - bullet: MIT Technology Review 35 Under 35 Innovators (2024)
+  - bullet: Forbes 30 Under 30 in Enterprise Technology (2024)
+  - bullet: ACM Doctoral Dissertation Award Honorable Mention (2023)
+  - bullet: Google PhD Fellowship in Machine Learning (2020 – 2023)
+  - bullet: Fulbright Scholarship for Graduate Studies (2018)
+```
+
+### Skills List
+
+```yaml
+skills:
+  - bullet: Python, JavaScript, C++
+  - bullet: Excellent communication skills
+  - bullet: Strong problem-solving abilities
+  - bullet: Team leadership and mentoring
+```
+
+### Awards and Honors
+
+```yaml
+awards:
+  - bullet: Best Paper Award at ICML 2023
+  - bullet: Dean's List, Fall 2020 and Spring 2021
+  - bullet: National Merit Scholar
+  - bullet: Eagle Scout Award
+```
+
+### Certifications
+
+```yaml
+certifications:
+  - bullet: AWS Solutions Architect Professional
+  - bullet: Google Cloud Professional Developer
+  - bullet: Certified Kubernetes Administrator (CKA)
+  - bullet: Certified ScrumMaster (CSM)
+```
+
+### Achievements
+
+```yaml
+achievements:
+  - bullet: Published 15 peer-reviewed papers in top-tier conferences
+  - bullet: Maintained 4.0 GPA throughout graduate studies
+  - bullet: Led team that won university hackathon 3 years in a row
+```
+
+## Markdown Support
+
+The `bullet` field fully supports Markdown formatting:
+
+```yaml
+honors:
+  - bullet: "**First Place** at MIT Hackathon (2024)"
+  - bullet: "*Forbes* 30 Under 30 in Enterprise Technology (2024)"
+  - bullet: "Google PhD Fellowship in [Machine Learning](https://example.com) (2020 – 2023)"
+  - bullet: "Best Paper Award at **NeurIPS 2023** with [publication](https://example.com)"
+```
+
+## Tips
+
+<Tip>
+  **When to use Bullet Entry:**
+  - Use for simple lists that don't need dates or locations
+  - Perfect for honors and awards sections
+  - Good for highlighting certifications without dates
+  - Ideal when you want a clean, minimal look
+</Tip>
+
+<Tip>
+  **Writing effective bullets:**
+  - Keep each bullet concise and focused
+  - Start with the most impressive or relevant items
+  - Use parallel structure (e.g., all starting with past tense verbs)
+  - Include years in parentheses if relevant: "Award Name (2024)"
+  - Use Markdown to emphasize key information
+</Tip>
+
+<Tip>
+  **Organizing bullets:**
+  - List items in reverse chronological order (most recent first)
+  - Group similar items together
+  - Keep the list focused - don't include too many items
+  - Consider using a different entry type if you need more structure
+</Tip>
+
+## Use Cases
+
+### Honors and Awards
+
+Bullet entries work perfectly for lists of honors and awards:
+
+```yaml
+selected_honors:
+  - bullet: MIT Technology Review 35 Under 35 Innovators (2024)
+  - bullet: Forbes 30 Under 30 in Enterprise Technology (2024)
+  - bullet: ACM Doctoral Dissertation Award Honorable Mention (2023)
+  - bullet: Google PhD Fellowship in Machine Learning (2020 – 2023)
+  - bullet: Fulbright Scholarship for Graduate Studies (2018)
+```
+
+### Quick Skills List
+
+For a simple skills list without categorization:
+
+```yaml
+core_competencies:
+  - bullet: Machine Learning & Deep Learning
+  - bullet: Distributed Systems Architecture
+  - bullet: Team Leadership & Mentoring
+  - bullet: Technical Writing & Communication
+```
+
+### Memberships
+
+```yaml
+professional_memberships:
+  - bullet: IEEE Member since 2018
+  - bullet: ACM Member since 2019
+  - bullet: Association for Computing Machinery
+```
+
+## Comparison with Other Entry Types
+
+<Tabs>
+  <Tab title="Bullet Entry">
+    **Best for:** Simple lists without structure
+    
+    ```yaml
+    skills:
+      - bullet: Python, JavaScript, C++
+      - bullet: Strong communication skills
+    ```
+    
+    Renders as:
+    - Python, JavaScript, C++
+    - Strong communication skills
+  </Tab>
+  
+  <Tab title="One Line Entry">
+    **Best for:** Key-value pairs with labels
+    
+    ```yaml
+    skills:
+      - label: Programming
+        details: Python, JavaScript, C++
+      - label: Soft Skills
+        details: Communication, Leadership
+    ```
+    
+    Renders as:
+    - **Programming:** Python, JavaScript, C++
+    - **Soft Skills:** Communication, Leadership
+  </Tab>
+  
+  <Tab title="Normal Entry">
+    **Best for:** Items needing dates and details
+    
+    ```yaml
+    awards:
+      - name: Best Innovation Award
+        date: 2023-06
+        summary: Award for innovative solution
+    ```
+    
+    Renders with full formatting including date
+  </Tab>
+</Tabs>
+
+## When NOT to Use Bullet Entry
+
+Consider using a different entry type if:
+
+<Warning>
+  - You need to include dates → Use **Normal Entry** instead
+  - You want labels and categories → Use **One Line Entry** instead
+  - You need detailed descriptions → Use **Normal Entry** with highlights
+  - You want automatic numbering → Use **Numbered Entry** or **Reversed Numbered Entry**
+</Warning>
+
+## Common Patterns
+
+### Honors Section
+
+```yaml
+cv:
+  sections:
+    selected_honors:
+      - bullet: MIT Technology Review 35 Under 35 Innovators (2024)
+      - bullet: Forbes 30 Under 30 in Enterprise Technology (2024)
+      - bullet: ACM Doctoral Dissertation Award Honorable Mention (2023)
+      - bullet: Google PhD Fellowship in Machine Learning (2020 – 2023)
+      - bullet: Fulbright Scholarship for Graduate Studies (2018)
+```
+
+### Mixed Section
+
+You can mix bullet entries with other entry types:
+
+```yaml
+skills:
+  - label: Languages
+    details: Python, JavaScript, Go
+  - label: Frameworks
+    details: React, Django, TensorFlow
+  - bullet: Strong analytical and problem-solving skills
+  - bullet: Excellent written and verbal communication
+  - bullet: Experience with Agile/Scrum methodologies
+```
+
+### Text Entry Alternative
+
+For paragraphs, use a text entry (plain string) instead:
+
+```yaml
+summary:
+  - This is a *TextEntry*. It is only a text and can be useful for
+    sections like **Summary**. To showcase the TextEntry completely,
+    this sentence is added, but it doesn't contain any information.
+```
+
+## Related Entry Types
+
+<CardGroup cols={3}>
+  <Card title="One Line Entry" icon="minus" href="/entries/one-line">
+    For labeled key-value pairs
+  </Card>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    For items with dates and details
+  </Card>
+  <Card title="Numbered Entry" icon="list-ol">
+    For numbered lists
+  </Card>
+</CardGroup>

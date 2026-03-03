@@ -1,0 +1,145 @@
+---
+title: Entry Types Overview
+description: Understanding the different entry types in RenderCV and when to use them
+---
+
+RenderCV provides 9 different entry types to structure various sections of your CV. Each entry type is designed for specific use cases and comes with its own set of fields.
+
+## Available Entry Types
+
+RenderCV offers the following entry types:
+
+<CardGroup cols={3}>
+  <Card title="Education Entry" icon="graduation-cap" href="/entries/education">
+    For academic degrees and educational background
+  </Card>
+  <Card title="Experience Entry" icon="briefcase" href="/entries/experience">
+    For work experience and professional positions
+  </Card>
+  <Card title="Publication Entry" icon="book" href="/entries/publication">
+    For research papers, articles, and publications
+  </Card>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    For projects, awards, certifications, and general items
+  </Card>
+  <Card title="One Line Entry" icon="minus" href="/entries/one-line">
+    For skills, languages, and compact key-value information
+  </Card>
+  <Card title="Bullet Entry" icon="circle-dot" href="/entries/bullet">
+    For simple bulleted lists
+  </Card>
+  <Card title="Text Entry" icon="align-left">
+    For paragraphs of text (like summaries)
+  </Card>
+  <Card title="Numbered Entry" icon="list-ol">
+    For numbered lists
+  </Card>
+  <Card title="Reversed Numbered Entry" icon="arrow-down-9-1">
+    For reverse-numbered lists (recent items get higher numbers)
+  </Card>
+</CardGroup>
+
+## Choosing the Right Entry Type
+
+### Complex Entries with Dates
+
+These entry types support dates, locations, highlights, and summaries:
+
+- **Education Entry**: Use for degrees, courses, and academic programs
+- **Experience Entry**: Use for jobs, internships, and professional positions
+- **Normal Entry**: Use for projects, awards, certifications, or volunteer work
+- **Publication Entry**: Use for research papers, articles, and published works
+
+### Simple Entries
+
+These entry types are best for concise information:
+
+- **One Line Entry**: Perfect for skills, languages, citizenships, or security clearances
+- **Bullet Entry**: Great for honors, awards, or short achievement lists
+- **Text Entry**: Ideal for profile summaries or personal statements
+- **Numbered Entry**: Use when you need explicit numbering
+- **Reversed Numbered Entry**: Use for chronological lists where recent items should have higher numbers (like talks or presentations)
+
+## Entry Type Comparison
+
+<Note>
+All entry types support **Markdown syntax**, allowing you to format text with bold, italic, links, and more.
+</Note>
+
+| Entry Type | Key Fields | Best For | Date Support |
+|------------|-----------|----------|-------------|
+| Education | `institution`, `area`, `degree` | Academic background | ✓ |
+| Experience | `company`, `position` | Work history | ✓ |
+| Publication | `title`, `authors`, `journal`, `doi` | Research papers | Single date |
+| Normal | `name` | Projects, awards, general items | ✓ |
+| One Line | `label`, `details` | Skills, compact info | ✗ |
+| Bullet | `bullet` | Simple lists | ✗ |
+| Text | Plain string | Paragraphs | ✗ |
+| Numbered | `number` | Numbered lists | ✗ |
+| Reversed Numbered | `reversed_number` | Reverse-numbered lists | ✗ |
+
+## Common Fields Across Entry Types
+
+Many entry types share common fields:
+
+### Date Fields
+
+- **`date`**: For single dates or custom text like "Fall 2023"
+- **`start_date` and `end_date`**: For date ranges (use `"present"` for ongoing)
+- Supported formats: `YYYY-MM-DD`, `YYYY-MM`, or `YYYY`
+
+### Content Fields
+
+- **`location`**: Physical location (e.g., "New York, NY" or "Remote")
+- **`summary`**: Brief description or overview
+- **`highlights`**: List of bullet points for key achievements
+
+## Example Section Structure
+
+```yaml
+cv:
+  sections:
+    education:
+      - institution: Princeton University
+        area: Computer Science
+        degree: PhD
+        start_date: 2018-09
+        end_date: 2023-05
+        location: Princeton, NJ
+        highlights:
+          - 'Thesis: Efficient Neural Architecture Search'
+          - 'Advisor: Prof. Sanjeev Arora'
+    
+    experience:
+      - company: Nexus AI
+        position: Co-Founder & CTO
+        start_date: 2023-06
+        end_date: present
+        location: San Francisco, CA
+        highlights:
+          - Built infrastructure serving 2M+ monthly API requests
+          - Raised $18M Series A led by Sequoia Capital
+    
+    skills:
+      - label: Languages
+        details: Python, C++, JavaScript, MATLAB
+      - label: ML Frameworks
+        details: PyTorch, JAX, TensorFlow
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Education Entry" icon="graduation-cap" href="/entries/education">
+    Learn about education entry fields
+  </Card>
+  <Card title="Experience Entry" icon="briefcase" href="/entries/experience">
+    Learn about experience entry fields
+  </Card>
+  <Card title="Publication Entry" icon="book" href="/entries/publication">
+    Learn about publication entry fields
+  </Card>
+  <Card title="Normal Entry" icon="folder" href="/entries/normal">
+    Learn about normal entry fields
+  </Card>
+</CardGroup>

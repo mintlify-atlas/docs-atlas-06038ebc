@@ -1,0 +1,132 @@
+---
+title: CLI Overview
+description: Introduction to RenderCV's command-line interface and global options
+---
+
+RenderCV provides a powerful command-line interface for generating professional CVs from YAML input files. The CLI includes three main commands for creating, rendering, and customizing your CV.
+
+## Quick Start
+
+Check your installed version:
+
+```bash
+rendercv --version
+```
+
+Get help anytime:
+
+```bash
+rendercv --help
+```
+
+## Available Commands
+
+RenderCV provides three main commands:
+
+<CardGroup cols={3}>
+  <Card title="new" icon="file-plus" href="/cli/new">
+    Generate a sample CV YAML file to get started
+  </Card>
+  <Card title="render" icon="file-pdf" href="/cli/render">
+    Generate PDF, Markdown, HTML, and PNG from your YAML input
+  </Card>
+  <Card title="create-theme" icon="palette" href="/cli/create-theme">
+    Create a custom theme with editable Typst templates
+  </Card>
+</CardGroup>
+
+## Global Options
+
+These options work with any command:
+
+<ParamField path="--version" type="flag">
+  Show the installed version of RenderCV
+
+  ```bash
+  rendercv --version
+  ```
+
+  Example output:
+  ```
+  RenderCV v2.0.0
+  ```
+</ParamField>
+
+<ParamField path="--help" type="flag">
+  Show help information for any command
+
+  ```bash
+  rendercv --help
+  rendercv new --help
+  rendercv render --help
+  ```
+</ParamField>
+
+## Command Line Basics
+
+<Tip>
+  New to the command line? Here's what you need to know:
+
+  - Commands are typed in your terminal/command prompt
+  - Options starting with `--` modify the command's behavior
+  - You can combine multiple options in a single command
+</Tip>
+
+### Combining Options
+
+You can use multiple options together:
+
+```bash
+rendercv new "John Doe" --theme moderncv --locale french
+```
+
+```bash
+rendercv render CV.yaml --watch --dont-generate-html --dont-generate-png
+```
+
+### Understanding Output
+
+RenderCV provides clear feedback about what it's doing:
+
+- **Green checkmarks** indicate successful operations
+- **Yellow warnings** alert you to potential issues
+- **Red errors** explain what went wrong and how to fix it
+
+## Version Checking
+
+RenderCV automatically checks for new versions once every 24 hours. If a newer version is available, you'll see a message like:
+
+```
+A new version of RenderCV is available! You are using v1.9, and the latest version is v2.0.
+```
+
+<Note>
+  Version checks run in the background and never block your commands. The check results are cached for 24 hours to minimize network requests.
+</Note>
+
+## Getting Help
+
+<AccordionGroup>
+  <Accordion title="Where can I find more examples?">
+    Check out the [Examples](/entries/overview) section for complete CV samples and use cases.
+  </Accordion>
+
+  <Accordion title="How do I report bugs or request features?">
+    Visit the [GitHub repository](https://github.com/sinaatalay/rendercv) to report issues or request features.
+  </Accordion>
+
+  <Accordion title="Can I use RenderCV in scripts or CI/CD?">
+    Yes! RenderCV works great in automated workflows. Use the `--quiet` flag with the `render` command to suppress output.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create Your First CV" icon="rocket" href="/cli/new">
+    Generate a sample YAML file with the `new` command
+  </Card>
+  <Card title="Render Your CV" icon="wand-magic-sparkles" href="/cli/render">
+    Learn about all rendering options and customization
+  </Card>
+</CardGroup>

@@ -1,0 +1,95 @@
+---
+title: Introduction
+description: RenderCV is a CV/resume generator for academics and engineers that lets you version-control your CV, focus on content, and get perfect typography automatically.
+---
+
+## Write your CV as YAML, get a PDF with perfect typography
+
+RenderCV reads a CV written in a YAML file and generates a PDF with professional typography. Simply write your content, then run:
+
+```bash
+rendercv render John_Doe_CV.yaml
+```
+
+No more fighting with word processors or LaTeX templates. Just focus on your content, and let RenderCV handle the formatting.
+
+## Why RenderCV?
+
+<CardGroup cols={3}>
+  <Card title="Version control" icon="code-branch">
+    Your CV is just text, so you can track changes with Git and never lose your history.
+  </Card>
+  <Card title="Focus on content" icon="pencil">
+    Stop worrying about alignment, spacing, and fonts. RenderCV handles all the formatting.
+  </Card>
+  <Card title="Perfect typography" icon="align-left">
+    Get consistent alignment and spacing automatically, with professional results every time.
+  </Card>
+  <Card title="JSON Schema support" icon="code">
+    Fill out your CV interactively with autocompletion and inline documentation in your editor.
+  </Card>
+  <Card title="Extensive design options" icon="palette">
+    Full control over themes, colors, typography, margins, and every other design detail.
+  </Card>
+  <Card title="Strict validation" icon="check-circle">
+    If something's wrong, you'll know exactly what and where. If it's valid, you get a perfect PDF.
+  </Card>
+  <Card title="Multiple themes" icon="swatchbook">
+    Choose from classic, moderncv, sb2nov, engineeringresumes, engineeringclassic, or create your own.
+  </Card>
+  <Card title="Any language" icon="globe">
+    Fill out the locale field to use RenderCV in your language with custom translations.
+  </Card>
+  <Card title="Multiple formats" icon="file-export">
+    Generate PDF, Typst source, Markdown, HTML, and PNG images from a single YAML file.
+  </Card>
+</CardGroup>
+
+## Example
+
+A simple YAML file like this:
+
+```yaml
+cv:
+  name: John Doe
+  location: San Francisco, CA
+  email: john.doe@email.com
+  website: https://rendercv.com/
+  social_networks:
+    - network: LinkedIn
+      username: rendercv
+    - network: GitHub
+      username: rendercv
+  sections:
+    Welcome to RenderCV:
+      - RenderCV reads a CV written in a YAML file, and generates a PDF with professional typography.
+      - See the [documentation](https://docs.rendercv.com) for more details.
+    education:
+      - institution: Princeton University
+        area: Computer Science
+        degree: PhD
+        start_date: 2018-09
+        end_date: 2023-05
+        location: Princeton, NJ
+        highlights:
+          - "Thesis: Efficient Neural Architecture Search for Resource-Constrained Deployment"
+          - "Advisor: Prof. Sanjeev Arora"
+          - NSF Graduate Research Fellowship, Siebel Scholar (Class of 2022)
+```
+
+Becomes a professionally formatted PDF with perfect typography in any of the available themes.
+
+<Note>
+RenderCV requires Python 3.12 or newer.
+</Note>
+
+## Get started
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install RenderCV using pip, pipx, uv, or Docker.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Create and render your first CV in minutes.
+  </Card>
+</CardGroup>

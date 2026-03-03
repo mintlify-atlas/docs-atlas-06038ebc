@@ -1,0 +1,687 @@
+---
+title: "Design Model"
+description: "Complete reference for theme customization, colors, typography, and layout options"
+---
+
+## Overview
+
+The Design model controls the visual appearance of your CV, including:
+
+- **Theme selection** (built-in or custom)
+- **Colors** for text, links, and accents
+- **Typography** including fonts, sizes, and styles
+- **Layout** settings for page size, margins, and spacing
+- **Entry templates** for customizing content structure
+
+## Design Model Structure
+
+```python
+type Design = Annotated[
+    BuiltInDesign,
+    pydantic.WrapValidator(lambda v, _, info: validate_design(v, info)),
+]
+```
+
+**Location:** `src/rendercv/schema/models/design/design.py:149`
+
+The Design model uses a discriminated union based on the `theme` field. Built-in themes are validated first, then custom themes are dynamically loaded.
+
+## ClassicTheme
+
+The default built-in theme with professional styling.
+
+```python
+class ClassicTheme(BaseModelWithoutExtraKeys):
+    theme: Literal["classic"] = "classic"
+    page: Page = pydantic.Field(default_factory=Page)
+    colors: Colors = pydantic.Field(default_factory=Colors)
+    typography: Typography = pydantic.Field(default_factory=Typography)
+    links: Links = pydantic.Field(default_factory=Links)
+    header: Header = pydantic.Field(default_factory=Header)
+    section_titles: SectionTitles = pydantic.Field(default_factory=SectionTitles)
+    sections: Sections = pydantic.Field(default_factory=Sections)
+    entries: Entries = pydantic.Field(default_factory=Entries)
+    templates: Templates = pydantic.Field(default_factory=Templates)
+```
+
+**Location:** `src/rendercv/schema/models/design/classic_theme.py:836`
+
+## Page Settings
+
+### page
+
+<ResponseField name="page.size" type="'a4' | 'a5' | 'us-letter' | 'us-executive'" default="us-letter">
+  Page size. Use `'a4'` for international standard or `'us-letter'` for US standard.
+</ResponseField>
+
+<ResponseField name="page.top_margin" type="TypstDimension" default="0.7in">
+  Top margin. Specify with units: `cm`, `in`, `pt`, `mm`, `em`.
+</ResponseField>
+
+<ResponseField name="page.bottom_margin" type="TypstDimension" default="0.7in">
+  Bottom margin.
+</ResponseField>
+
+<ResponseField name="page.left_margin" type="TypstDimension" default="0.7in">
+  Left margin.
+</ResponseField>
+
+<ResponseField name="page.right_margin" type="TypstDimension" default="0.7in">
+  Right margin.
+</ResponseField>
+
+<ResponseField name="page.show_footer" type="bool" default="true">
+  Show footer at the bottom of pages.
+</ResponseField>
+
+<ResponseField name="page.show_top_note" type="bool" default="true">
+  Show top note at the top of the first page.
+</ResponseField>
+
+**Example:**
+```yaml
+design:
+  theme: classic
+  page:
+    size: a4
+    top_margin: 2cm
+    bottom_margin: 2cm
+    left_margin: 2cm
+    right_margin: 2cm
+```
+
+## Colors
+
+### colors
+
+All colors can be specified as:
+- **Named colors**: `"Black"`, `"Red"`, `"Blue"` ([full list](https://www.w3.org/TR/SVG11/types.html#ColorKeywords))
+- **Hex values**: `"7fffd4"`, `"ff0000"`
+- **RGB values**: `"rgb(0,79,144)"`
+- **HSL values**: `"hsl(270, 60%, 70%)"`
+
+<ResponseField name="colors.body" type="Color" default="rgb(0, 0, 0)">
+  Body text color.
+</ResponseField>
+
+<ResponseField name="colors.name" type="Color" default="rgb(0, 79, 144)">
+  Name color in header.
+</ResponseField>
+
+<ResponseField name="colors.headline" type="Color" default="rgb(0, 79, 144)">
+  Headline color in header.
+</ResponseField>
+
+<ResponseField name="colors.connections" type="Color" default="rgb(0, 79, 144)">
+  Contact information color.
+</ResponseField>
+
+<ResponseField name="colors.section_titles" type="Color" default="rgb(0, 79, 144)">
+  Section title color.
+</ResponseField>
+
+<ResponseField name="colors.links" type="Color" default="rgb(0, 79, 144)">
+  Hyperlink color.
+</ResponseField>
+
+<ResponseField name="colors.footer" type="Color" default="rgb(128, 128, 128)">
+  Footer text color.
+</ResponseField>
+
+<ResponseField name="colors.top_note" type="Color" default="rgb(128, 128, 128)">
+  Top note text color.
+</ResponseField>
+
+**Example:**
+```yaml
+design:
+  colors:
+    name: "#2C3E50"
+    section_titles: rgb(44, 62, 80)
+    links: hsl(210, 29%, 24%)
+    body: Black
+```
+
+## Typography
+
+### typography.font_family
+
+<ResponseField name="typography.font_family" type="FontFamily | str" default="Source Sans 3">
+  Font family for all text. You can provide:
+  - A single font name as a string (applies to all elements)
+  - A dictionary with keys `body`, `name`, `headline`, `connections`, and `section_titles` to customize each element
+  
+  Any system font can be used. RenderCV includes these fonts by default:
+  - Source Sans 3
+  - Latin Modern Roman
+  - Latin Modern Serif
+  - Latin Modern Mono
+</ResponseField>
+
+**Examples:**
+```yaml
+# Single font for everything
+design:
+  typography:
+    font_family: "Latin Modern Roman"
+```
+
+```yaml
+# Different fonts for different elements
+design:
+  typography:
+    font_family:
+      body: "Source Sans 3"
+      name: "Latin Modern Serif"
+      section_titles: "Latin Modern Serif"
+      headline: "Source Sans 3"
+      connections: "Source Sans 3"
+```
+
+**Custom Fonts:**
+Place font files in a `fonts/` directory next to your input file:
+```
+my_cv/
+├── John_Doe_CV.yaml
+└── fonts/
+    ├── CustomFont-Regular.ttf
+    ├── CustomFont-Bold.ttf
+    └── CustomFont-Italic.ttf
+```
+
+### typography.font_size
+
+<ResponseField name="typography.font_size.body" type="TypstDimension" default="10pt">
+  Body text size.
+</ResponseField>
+
+<ResponseField name="typography.font_size.name" type="TypstDimension" default="30pt">
+  Name size in header.
+</ResponseField>
+
+<ResponseField name="typography.font_size.headline" type="TypstDimension" default="10pt">
+  Headline size.
+</ResponseField>
+
+<ResponseField name="typography.font_size.connections" type="TypstDimension" default="10pt">
+  Contact information size.
+</ResponseField>
+
+<ResponseField name="typography.font_size.section_titles" type="TypstDimension" default="1.4em">
+  Section title size. Use `em` for relative sizing.
+</ResponseField>
+
+### typography.alignment
+
+<ResponseField name="typography.alignment" type="'left' | 'justified' | 'justified-with-no-hyphenation'" default="justified">
+  Text alignment:
+  - `left`: Left-aligned text
+  - `justified`: Spreads text across full width
+  - `justified-with-no-hyphenation`: Justified without word breaks
+</ResponseField>
+
+### typography.line_spacing
+
+<ResponseField name="typography.line_spacing" type="TypstDimension" default="0.6em">
+  Space between lines of text. Larger values create more vertical space.
+</ResponseField>
+
+### typography.date_and_location_column_alignment
+
+<ResponseField name="typography.date_and_location_column_alignment" type="'left' | 'center' | 'right'" default="right">
+  Alignment for dates and locations in entries.
+</ResponseField>
+
+### typography.bold
+
+<ResponseField name="typography.bold.name" type="bool" default="true">
+  Make name bold.
+</ResponseField>
+
+<ResponseField name="typography.bold.headline" type="bool" default="false">
+  Make headline bold.
+</ResponseField>
+
+<ResponseField name="typography.bold.connections" type="bool" default="false">
+  Make connections bold.
+</ResponseField>
+
+<ResponseField name="typography.bold.section_titles" type="bool" default="true">
+  Make section titles bold.
+</ResponseField>
+
+### typography.small_caps
+
+<ResponseField name="typography.small_caps.name" type="bool" default="false">
+  Use small caps for name.
+</ResponseField>
+
+<ResponseField name="typography.small_caps.headline" type="bool" default="false">
+  Use small caps for headline.
+</ResponseField>
+
+<ResponseField name="typography.small_caps.connections" type="bool" default="false">
+  Use small caps for connections.
+</ResponseField>
+
+<ResponseField name="typography.small_caps.section_titles" type="bool" default="false">
+  Use small caps for section titles.
+</ResponseField>
+
+## Header Settings
+
+### header
+
+<ResponseField name="header.alignment" type="'left' | 'center' | 'right'" default="center">
+  Header alignment.
+</ResponseField>
+
+<ResponseField name="header.photo_width" type="TypstDimension" default="3.5cm">
+  Profile photo width.
+</ResponseField>
+
+<ResponseField name="header.photo_position" type="'left' | 'right'" default="left">
+  Photo position relative to text.
+</ResponseField>
+
+<ResponseField name="header.space_below_name" type="TypstDimension" default="0.7cm">
+  Space below your name.
+</ResponseField>
+
+<ResponseField name="header.space_below_headline" type="TypstDimension" default="0.7cm">
+  Space below the headline.
+</ResponseField>
+
+<ResponseField name="header.space_below_connections" type="TypstDimension" default="0.7cm">
+  Space below contact information.
+</ResponseField>
+
+### header.connections
+
+<ResponseField name="header.connections.phone_number_format" type="'national' | 'international' | 'E164'" default="national">
+  Phone number display format.
+</ResponseField>
+
+<ResponseField name="header.connections.hyperlink" type="bool" default="true">
+  Make contact information clickable in PDF.
+</ResponseField>
+
+<ResponseField name="header.connections.show_icons" type="bool" default="true">
+  Show icons next to contact information.
+</ResponseField>
+
+<ResponseField name="header.connections.display_urls_instead_of_usernames" type="bool" default="false">
+  Display full URLs instead of labels.
+</ResponseField>
+
+<ResponseField name="header.connections.separator" type="str" default="">
+  Character(s) to separate contact items (e.g., `'|'` or `'•'`). Leave empty for no separator.
+</ResponseField>
+
+<ResponseField name="header.connections.space_between_connections" type="TypstDimension" default="0.5cm">
+  Horizontal space between contact items.
+</ResponseField>
+
+## Section Settings
+
+### section_titles
+
+<ResponseField name="section_titles.type" type="'with_partial_line' | 'with_full_line' | 'without_line' | 'moderncv'" default="with_partial_line">
+  Section title visual style:
+  - `with_partial_line`: Line next to the title
+  - `with_full_line`: Line across the page
+  - `without_line`: No line
+  - `moderncv`: ModernCV style
+</ResponseField>
+
+<ResponseField name="section_titles.line_thickness" type="TypstDimension" default="0.5pt">
+  Section title line thickness.
+</ResponseField>
+
+<ResponseField name="section_titles.space_above" type="TypstDimension" default="0.5cm">
+  Space above section titles.
+</ResponseField>
+
+<ResponseField name="section_titles.space_below" type="TypstDimension" default="0.3cm">
+  Space below section titles.
+</ResponseField>
+
+### sections
+
+<ResponseField name="sections.allow_page_break" type="bool" default="true">
+  Allow page breaks within sections. If false, sections that don't fit will start on a new page.
+</ResponseField>
+
+<ResponseField name="sections.space_between_regular_entries" type="TypstDimension" default="1.2em">
+  Vertical space between entries.
+</ResponseField>
+
+<ResponseField name="sections.space_between_text_based_entries" type="TypstDimension" default="0.3em">
+  Vertical space between text-based entries (TextEntry, BulletEntry).
+</ResponseField>
+
+<ResponseField name="sections.show_time_spans_in" type="list[str]" default="['experience']">
+  Section titles where time spans (e.g., "2 years 3 months") should be displayed. Use snake_case section names.
+  
+  **Example:**
+  ```yaml
+  sections:
+    show_time_spans_in:
+      - experience
+      - education
+  ```
+</ResponseField>
+
+## Entry Settings
+
+### entries
+
+<ResponseField name="entries.date_and_location_width" type="TypstDimension" default="4.15cm">
+  Width of the date/location column.
+</ResponseField>
+
+<ResponseField name="entries.side_space" type="TypstDimension" default="0.2cm">
+  Left and right margins for entries.
+</ResponseField>
+
+<ResponseField name="entries.space_between_columns" type="TypstDimension" default="0.1cm">
+  Space between main content and date/location columns.
+</ResponseField>
+
+<ResponseField name="entries.allow_page_break" type="bool" default="false">
+  Allow page breaks within entries. If false, entries that don't fit will move to a new page.
+</ResponseField>
+
+<ResponseField name="entries.short_second_row" type="bool" default="true">
+  Shorten the second row to align with the date/location column.
+</ResponseField>
+
+<ResponseField name="entries.degree_width" type="TypstDimension" default="1cm">
+  Width of the degree column (for EducationEntry).
+</ResponseField>
+
+### entries.highlights
+
+<ResponseField name="entries.highlights.bullet" type="Bullet" default="•">
+  Bullet character for highlights. Options: `●`, `•`, `◦`, `-`, `◆`, `★`, `■`, `—`, `○`
+</ResponseField>
+
+<ResponseField name="entries.highlights.nested_bullet" type="Bullet" default="•">
+  Bullet character for nested highlights.
+</ResponseField>
+
+<ResponseField name="entries.highlights.space_left" type="TypstDimension" default="0.15cm">
+  Left indentation for highlights.
+</ResponseField>
+
+<ResponseField name="entries.highlights.space_above" type="TypstDimension" default="0cm">
+  Space above highlights.
+</ResponseField>
+
+<ResponseField name="entries.highlights.space_between_items" type="TypstDimension" default="0cm">
+  Space between highlight items.
+</ResponseField>
+
+<ResponseField name="entries.highlights.space_between_bullet_and_text" type="TypstDimension" default="0.5em">
+  Space between bullet and text.
+</ResponseField>
+
+## Link Settings
+
+### links
+
+<ResponseField name="links.underline" type="bool" default="false">
+  Underline hyperlinks.
+</ResponseField>
+
+<ResponseField name="links.show_external_link_icon" type="bool" default="false">
+  Show an external link icon next to URLs.
+</ResponseField>
+
+## Templates
+
+Customize how content is rendered using template strings with UPPERCASE placeholders.
+
+### templates.footer
+
+<ResponseField name="templates.footer" type="str" default="*NAME -- PAGE_NUMBER/TOTAL_PAGES*">
+  Footer template. Available placeholders:
+  - `NAME`: CV owner's name
+  - `PAGE_NUMBER`: Current page number
+  - `TOTAL_PAGES`: Total number of pages
+  - `CURRENT_DATE`: Formatted current date
+  - `MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`
+  - `DAY`, `DAY_IN_TWO_DIGITS`
+  - `YEAR`, `YEAR_IN_TWO_DIGITS`
+</ResponseField>
+
+### templates.top_note
+
+<ResponseField name="templates.top_note" type="str" default="*LAST_UPDATED CURRENT_DATE*">
+  Top note template. Available placeholders:
+  - `LAST_UPDATED`: Localized "last updated" text
+  - `CURRENT_DATE`: Formatted current date
+  - Same date placeholders as footer
+</ResponseField>
+
+### templates.single_date
+
+<ResponseField name="templates.single_date" type="str" default="MONTH_ABBREVIATION YEAR">
+  Single date template. Available placeholders:
+  - `MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`
+  - `DAY`, `DAY_IN_TWO_DIGITS`
+  - `YEAR`, `YEAR_IN_TWO_DIGITS`
+</ResponseField>
+
+### templates.date_range
+
+<ResponseField name="templates.date_range" type="str" default="START_DATE – END_DATE">
+  Date range template. Available placeholders:
+  - `START_DATE`: Formatted start date
+  - `END_DATE`: Formatted end date (or "present" for current positions)
+</ResponseField>
+
+### templates.time_span
+
+<ResponseField name="templates.time_span" type="str" default="HOW_MANY_YEARS YEARS HOW_MANY_MONTHS MONTHS">
+  Time span (duration) template. Available placeholders:
+  - `HOW_MANY_YEARS`: Number of years
+  - `YEARS`: Localized "years" or "year"
+  - `HOW_MANY_MONTHS`: Number of months
+  - `MONTHS`: Localized "months" or "month"
+</ResponseField>
+
+### Entry Templates
+
+Customize how different entry types are rendered:
+
+<Accordion title="ExperienceEntry Template">
+  <ResponseField name="templates.experience_entry.main_column" type="str" default="**COMPANY**, POSITION\nSUMMARY\nHIGHLIGHTS">
+    Main column template. Available placeholders:
+    - `COMPANY`, `POSITION`, `SUMMARY`, `HIGHLIGHTS`
+    - `LOCATION`, `DATE`
+    - Any custom fields (UPPERCASE)
+  </ResponseField>
+  
+  <ResponseField name="templates.experience_entry.date_and_location_column" type="str" default="LOCATION\nDATE">
+    Date/location column template.
+  </ResponseField>
+</Accordion>
+
+<Accordion title="EducationEntry Template">
+  <ResponseField name="templates.education_entry.main_column" type="str" default="**INSTITUTION**, AREA\nSUMMARY\nHIGHLIGHTS">
+    Main column template. Available placeholders:
+    - `INSTITUTION`, `AREA`, `DEGREE`, `DEGREE_WITH_AREA`
+    - `SUMMARY`, `HIGHLIGHTS`, `LOCATION`, `DATE`
+    - Any custom fields (UPPERCASE)
+  </ResponseField>
+  
+  <ResponseField name="templates.education_entry.degree_column" type="str | null" default="**DEGREE**">
+    Optional degree column. Set to `null` to disable.
+  </ResponseField>
+  
+  <ResponseField name="templates.education_entry.date_and_location_column" type="str" default="LOCATION\nDATE">
+    Date/location column template.
+  </ResponseField>
+</Accordion>
+
+<Accordion title="PublicationEntry Template">
+  <ResponseField name="templates.publication_entry.main_column" type="str" default="**TITLE**\nSUMMARY\nAUTHORS\nURL (JOURNAL)">
+    Main column template. Available placeholders:
+    - `TITLE`, `AUTHORS`, `SUMMARY`
+    - `DOI`, `URL`, `JOURNAL`, `DATE`
+    - Any custom fields (UPPERCASE)
+  </ResponseField>
+  
+  <ResponseField name="templates.publication_entry.date_and_location_column" type="str" default="DATE">
+    Date column template.
+  </ResponseField>
+</Accordion>
+
+<Accordion title="NormalEntry Template">
+  <ResponseField name="templates.normal_entry.main_column" type="str" default="**NAME**\nSUMMARY\nHIGHLIGHTS">
+    Main column template. Available placeholders:
+    - `NAME`, `SUMMARY`, `HIGHLIGHTS`
+    - `LOCATION`, `DATE`
+    - Any custom fields (UPPERCASE)
+  </ResponseField>
+  
+  <ResponseField name="templates.normal_entry.date_and_location_column" type="str" default="LOCATION\nDATE">
+    Date/location column template.
+  </ResponseField>
+</Accordion>
+
+<Accordion title="OneLineEntry Template">
+  <ResponseField name="templates.one_line_entry.main_column" type="str" default="**LABEL:** DETAILS">
+    Main column template. Available placeholders:
+    - `LABEL`, `DETAILS`
+    - Any custom fields (UPPERCASE)
+  </ResponseField>
+</Accordion>
+
+## Custom Themes
+
+Create custom themes by placing a folder next to your input file:
+
+```
+my_cv/
+├── John_Doe_CV.yaml
+└── mytheme/
+    ├── __init__.py          # Optional: custom settings class
+    ├── Preamble.j2.typ
+    ├── Header.j2.typ
+    └── entries/
+        └── ExperienceEntry.j2.typ
+```
+
+**In YAML:**
+```yaml
+design:
+  theme: mytheme
+  # Your custom settings here
+```
+
+**Custom settings class (`mytheme/__init__.py`):**
+```python
+from rendercv.schema.models.design.classic_theme import ClassicTheme
+import pydantic
+
+class MythemeTheme(ClassicTheme):
+    theme: str = "mytheme"
+    
+    # Add custom settings
+    custom_option: str = pydantic.Field(
+        default="value",
+        description="My custom option"
+    )
+```
+
+## Complete Example
+
+<CodeGroup>
+```yaml Minimal Customization
+design:
+  theme: classic
+  colors:
+    name: "#2C3E50"
+    section_titles: "#2C3E50"
+    links: "#3498DB"
+  typography:
+    font_family: "Latin Modern Roman"
+```
+
+```yaml Professional Style
+design:
+  theme: classic
+  page:
+    size: a4
+    top_margin: 1.5cm
+    bottom_margin: 1.5cm
+    left_margin: 1.5cm
+    right_margin: 1.5cm
+  colors:
+    name: "#1A1A1A"
+    section_titles: "#2C3E50"
+    links: "#3498DB"
+    body: "#333333"
+  typography:
+    font_family:
+      body: "Source Sans 3"
+      name: "Latin Modern Serif"
+      section_titles: "Latin Modern Serif"
+    font_size:
+      name: 32pt
+      section_titles: 1.5em
+    alignment: justified
+  header:
+    alignment: left
+    photo_width: 3cm
+    space_below_name: 0.5cm
+  section_titles:
+    type: with_full_line
+  entries:
+    highlights:
+      bullet: "◆"
+```
+
+```yaml Compact Layout
+design:
+  theme: classic
+  page:
+    top_margin: 0.5in
+    bottom_margin: 0.5in
+    left_margin: 0.5in
+    right_margin: 0.5in
+  typography:
+    font_size:
+      body: 9pt
+      name: 24pt
+    line_spacing: 0.5em
+  header:
+    space_below_name: 0.3cm
+    space_below_headline: 0.3cm
+    space_below_connections: 0.5cm
+  section_titles:
+    space_above: 0.3cm
+    space_below: 0.2cm
+  sections:
+    space_between_regular_entries: 0.8em
+```
+</CodeGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="CV Model" icon="address-card" href="/api/cv-model">
+    Content structure
+  </Card>
+  <Card title="Templater" icon="code" href="/api/templater">
+    Template customization
+  </Card>
+  <Card title="Locale Model" icon="language" href="/api/locale-model">
+    Language-specific formatting
+  </Card>
+  <Card title="Data Models" icon="database" href="/api/data-models">
+    Overall architecture
+  </Card>
+</CardGroup>
