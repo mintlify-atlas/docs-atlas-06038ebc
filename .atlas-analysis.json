@@ -1,0 +1,115 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "RenderCV",
+  "projectDescription": "CV/resume generator that converts YAML files to professionally typeset PDFs using Typst",
+  "theme": "aspen",
+  "primaryColor": "#004F90",
+  "lightColor": "#0066B3",
+  "darkColor": "#003A6B",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/yaml-structure",
+              "guides/themes",
+              "guides/design-customization",
+              "guides/localization",
+              "guides/json-schema"
+            ]
+          },
+          {
+            "group": "How-To",
+            "pages": [
+              "how-to/vs-code-setup",
+              "how-to/custom-fonts",
+              "how-to/custom-themes",
+              "how-to/override-templates",
+              "how-to/arbitrary-keys"
+            ]
+          },
+          {
+            "group": "Entry Types",
+            "pages": [
+              "entries/overview",
+              "entries/education",
+              "entries/experience",
+              "entries/publication",
+              "entries/normal",
+              "entries/one-line",
+              "entries/bullet"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI Reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "cli/overview",
+              "cli/new",
+              "cli/render",
+              "cli/create-theme"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Core",
+            "pages": [
+              "api/data-models",
+              "api/renderer",
+              "api/templater"
+            ]
+          },
+          {
+            "group": "Schema Models",
+            "pages": [
+              "api/cv-model",
+              "api/design-model",
+              "api/locale-model"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "YAML-based CV definition with JSON Schema validation",
+    "Multiple built-in themes (Classic, Moderncv, Sb2nov, Engineeringresumes, Engineeringclassic)",
+    "Extensive design customization (colors, typography, margins, spacing)",
+    "Multi-format output (PDF via Typst, Markdown, HTML, PNG)",
+    "Live preview with --watch mode for auto-reloading",
+    "Internationalization support with customizable locales",
+    "Custom theme creation and template overriding",
+    "Strict validation with helpful error messages"
+  ],
+  "publicApiSurface": [
+    "rendercv new - Generate sample CV YAML file",
+    "rendercv render - Convert YAML to PDF/Markdown/HTML/PNG",
+    "rendercv create-theme - Create custom theme templates",
+    "rendercv --version - Show installed version",
+    "EducationEntry - Education background entry type",
+    "ExperienceEntry - Work experience entry type",
+    "PublicationEntry - Publication entry type",
+    "NormalEntry - Generic entry with title and details",
+    "OneLineEntry - Compact single-line entry",
+    "BulletEntry - Simple bullet point entry"
+  ]
+}
